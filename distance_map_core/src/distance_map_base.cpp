@@ -4,10 +4,34 @@
 
 namespace distmap {
 
+bool DistanceMapBase::configure()
+{
+  field_obstacles_ = boost::make_shared<DistanceFieldGrid>();
+  field_unknowns_  = boost::make_shared<DistanceFieldGrid>();
+
+  return configureImpl();
+}
+
 bool DistanceMapBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
 {
-  throw std::runtime_error("Not implemented !");
-  return true;
+  if (occ_grid == nullptr)
+  {
+    ROS_ERROR("Input nav_msgs::OccupancyGridConstPtr is nullptr !");
+    return false;
+  }
+
+  preProcess(occ_grid);
+
+  bool processed = processImpl(occ_grid);
+
+  if (!processed)
+  {
+    ROS_WARN("Could not process occupancy_grid !");
+  }
+
+  postProcess();
+
+  return processed;
 }
 
 /*

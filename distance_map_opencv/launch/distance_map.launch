@@ -1,0 +1,22 @@
+<launch>
+
+  <!-- Launch node through valgrind/gdb. -->
+  <arg name="debug" default="false"/>
+
+  <!-- The input topic. -->
+  <arg name="topic_in" default="/map"/>
+
+  <!-- A config file for the laser odometry node. -->
+  <!--arg name="node_config_file" default="$(find distance_map_node)/config/distance_map_node_default.yaml"/-->
+
+  <!-- A config file for the laser odometry plugin. -->
+  <!--<arg name="plugin_config_file" default="$(find distance_map_opencv)/config/distance_map_opencv_default.yaml"/>-->
+
+  <include file="$(find distance_map_node)/launch/distance_map.launch">
+    <arg name="debug" value="$(arg debug)"/>
+    <arg name="distance_map_type" value="distmap::DistanceMapOpencv"/>
+    <!--arg name="node_config_file" value="$(arg node_config_file)"/-->
+    <arg name="topic_in" value="$(arg topic_in)" />
+  </include>
+
+</launch>

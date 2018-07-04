@@ -15,8 +15,8 @@
   <license>Apache-2.0</license>
 
   <!-- OpenCV license -->
-  <license>todo</license>
-  <url type="website">https://github.com/todo/todo</url>
+  <license>BSD</license>
+  <url type="website">https://github.com/opencv/opencv</url>
 
   <buildtool_depend>catkin</buildtool_depend>
 
@@ -29,6 +29,6 @@
 <!--  <test_depend>rostest</test_depend>-->
 
   <export>
-    <distance_map_core plugin="${prefix}/distance_map_plugins.xml" />
+    <distance_map_core plugin="${prefix}/distance_map_plugin.xml" />
   </export>
 </package>

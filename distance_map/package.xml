@@ -13,11 +13,12 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>distance_map_core</depend>
-  <depend>distance_map_msgs</depend>
-  <depend>distance_map_node</depend>
+  <exec_depend>distance_map_core</exec_depend>
+  <exec_depend>distance_map_msgs</exec_depend>
+  <exec_depend>distance_map_node</exec_depend>
 
-  <depend>distance_map_opencv</depend>
+  <!-- plugin -->
+  <exec_depend>distance_map_opencv</exec_depend>
 
   <export>
     <metapackage/>

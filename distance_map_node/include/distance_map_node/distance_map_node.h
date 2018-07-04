@@ -3,6 +3,8 @@
 
 #include <ros/ros.h>
 
+#include <nav_msgs/OccupancyGrid.h>
+
 namespace distmap {
 
 /**
@@ -16,19 +18,21 @@ public:
   DistanceMapNode() = default;
   virtual ~DistanceMapNode() = default;
 
-  void process();
+  void initialize();
+
+  void process(const nav_msgs::OccupancyGridConstPtr occ_grid);
 
 protected:
 
   bool configured_ = false; /*!< @brief Whether the node is configured. */
 
-  std::shared_ptr<DistanceMapBase> dist_map_;
+  boost::shared_ptr<DistanceMapBase> dist_map_ptr_;
 
-  ros::NodeHandle nh_;
+  ros::NodeHandle private_nh_ = ros::NodeHandle("~");
 
   ros::Subscriber map_sub_;
 
-  ros::Publisher field_obstacles__pub_, field_unknowns_pub_;
+  ros::Publisher field_obstacles_pub_, field_unknowns_pub_;
 };
 
 } /* namespace distmap */

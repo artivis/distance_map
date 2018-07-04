@@ -11,6 +11,9 @@ class DistanceMapBase
 {
 public:
 
+  using DistanceFieldGrid    = distance_map_msgs::DistanceFieldGrid;
+  using DistanceFieldGridPtr = distance_map_msgs::DistanceFieldGridPtr;
+
   DistanceMapBase() = default;
   virtual ~DistanceMapBase() = default;
 
@@ -20,22 +23,60 @@ public:
   //double cost(const double x, const double y);
   //double cost(const double x, const double y, const double yaw);
 
-  void setType(const std::string& type) { type_ = type; }
+  void setType(const std::string& type);
 
-  inline virtual bool configure() { return true; };
+  bool configure();
+
+  DistanceFieldGridPtr getDistanceFieldObstacle();
+
+  DistanceFieldGridPtr getDistanceFieldUnknown();
 
 protected:
 
   std::string type_;
 
-  distance_map_msgs::DistanceFieldGrid field_obstacles_,
-                                       field_unknowns_;
+  DistanceFieldGridPtr field_obstacles_,
+                       field_unknowns_;
 
-  virtual void preProcess() {};
-  virtual void postProcess() {};
+  virtual bool configureImpl();
+
+  virtual void preProcess(const nav_msgs::OccupancyGridConstPtr occ_grid);
+
+  virtual bool processImpl(const nav_msgs::OccupancyGridConstPtr occ_grid) = 0;
+
+  virtual void postProcess();
 };
 
 using DistanceMapPtr = boost::shared_ptr<DistanceMapBase>;
+
+inline void DistanceMapBase::setType(const std::string& type) { type_ = type; }
+
+inline bool DistanceMapBase::configureImpl()
+{
+  return true;
+}
+
+inline void DistanceMapBase::preProcess(const nav_msgs::OccupancyGridConstPtr)
+{
+  //
+}
+
+inline void DistanceMapBase::postProcess()
+{
+  //
+}
+
+inline DistanceMapBase::DistanceFieldGridPtr
+DistanceMapBase::getDistanceFieldObstacle()
+{
+  return field_obstacles_;
+}
+
+inline DistanceMapBase::DistanceFieldGridPtr
+DistanceMapBase::getDistanceFieldUnknown()
+{
+  return field_unknowns_;
+}
 
 } /* namespace distmap */
 
