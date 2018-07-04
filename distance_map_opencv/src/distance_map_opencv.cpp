@@ -1,8 +1,6 @@
 #include "distance_map_opencv/distance_map_opencv.h"
 #include "distance_map_msgs/DistanceFieldGrid.h"
 
-#include <pluginlib/class_list_macros.h>
-
 #include <ros/ros.h>
 
 #include <opencv2/opencv.hpp>
@@ -43,11 +41,10 @@ void matToDistanceFieldGridMsg(const cv::Mat& cv_map,
   map.data.resize(map.info.height * map.info.width);
 
   unsigned int i;
-
   for (unsigned int rows = 0; rows < map.info.height; ++rows) {
     for (unsigned int cols = 0; cols < map.info.width; ++cols) {
-      i = cols + (map.info.height - rows - 1) * map.info.width;
-      map.data[i] = cv_map.at<float>(rows, cols);
+      i = cols + rows * map.info.width;
+      map.data[i] = cv_map.at<float>(rows, cols) * map.info.resolution;
     }
   }
 }
@@ -64,7 +61,7 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
   }
 
   // OccupancyGrid to cv::Mat 8-bit single channel
-  occupancyGridToMat(*occ_grid).convertTo(image_, CV_8UC1);
+  image_ = occupancyGridToMat(*occ_grid);
 
   // conversion into the binary image
   cv::threshold(image_, binary_image_, 55, 255, cv::THRESH_BINARY);
@@ -72,12 +69,21 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
   // computation of the distance transform on the binary image
   cv::distanceTransform(binary_image_, distance_field_obstacle_image_, CV_DIST_L2, 3);
 
-  // Vizualization of the distance field image of obstacles
+  // pixel-destance to meters
+  distance_field_obstacle_image_ *= occ_grid->info.resolution;
+
   /*
+  // Vizualization of the obstacles distance field grid
   cv::Mat distance_image_norm_;
-  cv::normalize(distance_field_obstacle_image_, distance_image_norm_, 255, 0);
-  cv::imshow("Display window", distance_image_norm_);
-  cv::waitKey(0.2);
+  cv::normalize(distance_field_obstacle_image_, distance_image_norm_, 1, 0, cv::NORM_MINMAX);
+  cv::imshow("original", binary_image_);
+  cv::imshow("distances", distance_image_norm_);
+
+  const double sec  = 1000;
+  const double wait = 30 * sec;
+
+  cv::waitKey(wait);
+  cv::destroyAllWindows();
   */
 
   // convert opencv the distance_map_msgs
@@ -91,4 +97,5 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
 
 } /* namespace distmap */
 
+#include <pluginlib/class_list_macros.h>
 PLUGINLIB_EXPORT_CLASS(distmap::DistanceMapOpencv, distmap::DistanceMapBase);
