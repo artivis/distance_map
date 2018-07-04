@@ -1,8 +1,12 @@
 #include <pluginlib/class_list_macros.h>
 
+#include <ros/ros.h>
+
 #include <opencv2/opencv.hpp>
 
 #include "distance_map_opencv/distance_map_opencv.h"
+
+#include "distance_map_msgs/DistanceFieldGrid.h"
 
 namespace distmap  {
 
@@ -46,9 +50,9 @@ cv::Mat occupancyGridToMat(const nav_msgs::OccupancyGrid& map)
   return cv_map;
 }
 
-void matToDistanceFieldGridMsg(const cv::Mat& cv_map, dtsf_map::DistanceFieldGrid &map)
+void matToDistanceFieldGridMsg(const cv::Mat& cv_map, const nav_msgs::MapMetaData map_metadata, distance_map_msgs::DistanceFieldGrid &map)
 {
-  map.info = map_metadata_;
+  map.info = map_metadata;
   map.data.resize(map.info.height * map.info.width);
 
   unsigned int i;
@@ -107,7 +111,7 @@ bool DistanceMapOpencv::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
   */
 
   // convert opencv the distance_map_msgs
-  matToDistanceFieldGridMsg(distance_field_obstacle_image_, field_obstacles_);
+  matToDistanceFieldGridMsg(distance_field_obstacle_image_, map_metadata_, field_obstacles_);
 
   return true;
 }
