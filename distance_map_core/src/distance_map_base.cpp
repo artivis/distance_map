@@ -33,7 +33,7 @@ bool DistanceMapBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
 
   if (field_unknowns_ == nullptr)
   {
-    field_obstacles_ = std::make_shared<DistanceFieldGrid>(
+    field_unknowns_ = std::make_shared<DistanceFieldGrid>(
                          DistanceFieldGrid::Dimension(occ_grid->info.width,
                                                       occ_grid->info.height),
                          occ_grid->info.resolution,

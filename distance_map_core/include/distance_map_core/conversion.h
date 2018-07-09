@@ -10,6 +10,12 @@ distance_map_msgs::DistanceFieldGrid toMsg(const DistanceFieldGrid& map)
 {
   distance_map_msgs::DistanceFieldGrid msg;
 
+  msg.info.width  = map.getDimension().width;
+  msg.info.height = map.getDimension().height;
+  msg.info.resolution = map.getResolution();
+  msg.info.origin.position.x = map.getOrigin().x;
+  msg.info.origin.position.y = map.getOrigin().y;
+
   const std::size_t num_elem = map.getDimension().width * map.getDimension().height;
 
   msg.data.reserve(num_elem);
