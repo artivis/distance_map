@@ -88,7 +88,7 @@ protected:
 
   Dimension dimension_;
   double resolution_ = 1;
-  Origin origin_;
+  Origin origin_; ///< @brief The 2-D pose of the lower-left pixel in the map
 
   double* data_;
 
