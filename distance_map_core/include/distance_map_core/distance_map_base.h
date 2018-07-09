@@ -3,16 +3,15 @@
 
 #include <nav_msgs/OccupancyGrid.h>
 
-#include "distance_map_msgs/DistanceFieldGrid.h"
+#include <distance_map_msgs/DistanceFieldGrid.h>
+
+#include "distance_map_core/distance_field_grid.h"
 
 namespace distmap {
 
 class DistanceMapBase
 {
 public:
-
-  using DistanceFieldGrid    = distance_map_msgs::DistanceFieldGrid;
-  using DistanceFieldGridPtr = distance_map_msgs::DistanceFieldGridPtr;
 
   DistanceMapBase() = default;
   virtual ~DistanceMapBase() = default;
@@ -66,13 +65,13 @@ inline void DistanceMapBase::postProcess()
   //
 }
 
-inline DistanceMapBase::DistanceFieldGridPtr
+inline DistanceFieldGridPtr
 DistanceMapBase::getDistanceFieldObstacle()
 {
   return field_obstacles_;
 }
 
-inline DistanceMapBase::DistanceFieldGridPtr
+inline DistanceFieldGridPtr
 DistanceMapBase::getDistanceFieldUnknown()
 {
   return field_unknowns_;

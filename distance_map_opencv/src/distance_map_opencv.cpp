@@ -33,18 +33,23 @@ cv::Mat occupancyGridToMat(const nav_msgs::OccupancyGrid& map)
   return cv_map;
 }
 
-void matToDistanceFieldGridMsg(const cv::Mat& cv_map,
-                               const nav_msgs::MapMetaData map_metadata,
-                               distance_map_msgs::DistanceFieldGrid &map)
+void matToDistanceFieldGrid(const cv::Mat& cv_map,
+                            const nav_msgs::MapMetaData map_metadata,
+                            distmap::DistanceFieldGrid &map)
 {
-  map.info = map_metadata;
-  map.data.resize(map.info.height * map.info.width);
+  const std::size_t width  = static_cast<std::size_t>(map_metadata.width),
+                    height = static_cast<std::size_t>(map_metadata.height);
+  map.resize(width, height);
+  map.setOrigin(distmap::DistanceFieldGrid::Origin(map_metadata.origin.position.x,
+                                                   map_metadata.origin.position.y,
+                                                   0));
+  map.setResolution(map_metadata.resolution);
 
   unsigned int i;
-  for (unsigned int rows = 0; rows < map.info.height; ++rows) {
-    for (unsigned int cols = 0; cols < map.info.width; ++cols) {
-      i = cols + rows * map.info.width;
-      map.data[i] = cv_map.at<float>(rows, cols) * map.info.resolution;
+  for (unsigned int rows = 0; rows < height; ++rows) {
+    for (unsigned int cols = 0; cols < width; ++cols) {
+      i = cols + rows * width;
+      map.data()[i] = static_cast<double>(cv_map.at<float>(rows, cols));
     }
   }
 }
@@ -87,10 +92,8 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
   */
 
   // convert opencv the distance_map_msgs
-  matToDistanceFieldGridMsg(distance_field_obstacle_image_,
-                            occ_grid->info, *field_obstacles_);
-
-  field_obstacles_->header = occ_grid->header;
+  matToDistanceFieldGrid(distance_field_obstacle_image_,
+                         occ_grid->info, *field_obstacles_);
 
   return true;
 }

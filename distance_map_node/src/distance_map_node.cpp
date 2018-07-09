@@ -3,6 +3,7 @@
 #include <distance_map_msgs/DistanceFieldGrid.h>
 
 #include <distance_map_core/distance_map_base.h>
+#include <distance_map_core/conversion.h>
 #include <distance_map_core/distance_map_instantiater.h>
 
 namespace distmap {
@@ -50,7 +51,15 @@ void DistanceMapNode::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
 
   if (dist_map_ptr_->process(occ_grid))
   {
-    field_obstacles_pub_.publish(dist_map_ptr_->getDistanceFieldObstacle());
+    auto distmap_ptr = dist_map_ptr_->getDistanceFieldObstacle();
+
+    assert(distmap_ptr != nullptr && "distmap_ptr == nullptr !");
+
+    auto field_msg = distmap::toMsg(*distmap_ptr);
+
+    field_msg.header = occ_grid->header;
+
+    field_obstacles_pub_.publish(field_msg);
     //field_unknowns_pub_.publish(dist_map_ptr_->getDistanceFieldUnknown());
   }
   else
