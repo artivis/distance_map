@@ -74,9 +74,6 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
   // computation of the distance transform on the binary image
   cv::distanceTransform(binary_image_, distance_field_obstacle_image_, CV_DIST_L2, 3);
 
-  // pixel-destance to meters
-  distance_field_obstacle_image_ *= occ_grid->info.resolution;
-
   /*
   // Vizualization of the obstacles distance field grid
   cv::Mat distance_image_norm_;
