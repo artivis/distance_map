@@ -150,8 +150,7 @@ void DistanceFieldGrid::resize(const std::size_t row, const std::size_t col)
 
 bool DistanceFieldGrid::isCellValid(const std::size_t row, const std::size_t col) const noexcept
 {
-  return (row >= 0) && (col >= 0) &&
-         (row < dimension_.height) && (col < dimension_.width);
+  return (row < dimension_.height) && (col < dimension_.width);
 }
 
 bool DistanceFieldGrid::isPositionValid(const double x, const double y) const noexcept
@@ -273,7 +272,7 @@ DistanceFieldGrid::getOrigin() const noexcept
 
 std::size_t DistanceFieldGrid::getIndex(const std::size_t row, const std::size_t col) const
 {
-  return col + row*dimension_.width;
+  return col + (dimension_.height - row - 1) * dimension_.width;
 }
 
 void DistanceFieldGrid::assertIsValidCell(const std::size_t& row, const std::size_t& col) const
