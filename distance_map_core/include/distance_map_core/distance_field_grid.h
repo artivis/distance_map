@@ -206,9 +206,6 @@ DistanceFieldGrid::gradientAtCell(std::size_t row, std::size_t col) const
 
   Gradient grad;
 
-//  grad.dx = (atCell(row-1, col) - atCell(row+1, col)) / 2.;
-//  grad.dy = (atCell(row, col-1) - atCell(row, col+1)) / 2.;
-
   grad.dx = (atCell(row, col-1) - atCell(row, col+1)) / 2.;
   grad.dy = (atCell(row-1, col) - atCell(row+1, col)) / 2.;
 
