@@ -2,6 +2,7 @@
 #include "distance_map_msgs/DistanceFieldGrid.h"
 
 #include <ros/ros.h>
+#include <costmap_2d/cost_values.h>
 
 #include <opencv2/opencv.hpp>
 
@@ -20,21 +21,41 @@ cv::Mat occupancyGridToMat(const nav_msgs::OccupancyGrid& map)
       } else if (map.data[i] == +100) { //occ (0.65,1]
         cv_map.at<uchar>(rows, cols) = 0;
       } else { //occ [0.1,0.65]
-        cv_map.at<uchar>(rows, cols) = 205;
+        cv_map.at<uchar>(rows, cols) = 127; //205?
       }
     }
   }
 
-  /// @todo cv::Mat origin is top-left corner
-  /// thus this image seems rotated by 90deg CC
-  /// should I redress that ??
-  //  cv::rotate(cv_map, cv_map, cv::ROTATE_90_CLOCKWISE);
+  return cv_map;
+}
+
+cv::Mat costMapToMat(const costmap_2d::Costmap2D& costmap)
+{
+  const unsigned int X = costmap.getSizeInCellsX(),
+                     Y = costmap.getSizeInCellsY();
+  cv::Mat cv_map(Y, X, CV_8UC1);
+  unsigned int i;
+  // Make a double loop over indexes and assign values
+  unsigned char const* data = costmap.getCharMap();
+  for (unsigned int rows = 0; rows < Y; ++rows) {
+    for (unsigned int cols = 0; cols < X; ++cols) {
+      i = cols + (Y - rows - 1) * X;
+      if (data[i] == costmap_2d::INSCRIBED_INFLATED_OBSTACLE or
+          data[i] == costmap_2d::LETHAL_OBSTACLE) { // Obstacle
+        cv_map.at<uchar>(rows, cols) = 0;
+      } else if (data[i] == costmap_2d::NO_INFORMATION) { // UNKNOWN
+        cv_map.at<uchar>(rows, cols) = 127;
+      } else { // FREE_SPACE
+        cv_map.at<uchar>(rows, cols) = 254;
+      }
+    }
+  }
 
   return cv_map;
 }
 
 void matToDistanceFieldGrid(const cv::Mat& cv_map,
-                            const nav_msgs::MapMetaData map_metadata,
+                            const nav_msgs::MapMetaData& map_metadata,
                             distmap::DistanceFieldGrid &map)
 {
   const std::size_t width  = static_cast<std::size_t>(map_metadata.width),
@@ -61,7 +82,7 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
 
   if (occ_grid == nullptr)
   {
-    ROS_WARN("Received a nullptr !");
+    ROS_WARN("Received a nav_msgs::OccupancyGridConstPtr nullptr !");
     return false;
   }
 
@@ -81,16 +102,66 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
   cv::imshow("original", binary_image_);
   cv::imshow("distances", distance_image_norm_);
 
-  const double sec  = 1000;
+  static const double sec = 1000;
   const double wait = 30 * sec;
 
   cv::waitKey(wait);
   cv::destroyAllWindows();
   */
 
-  // convert opencv the distance_map_msgs
+  // convert opencv to distance_map_msgs
   matToDistanceFieldGrid(distance_field_obstacle_image_,
                          occ_grid->info, *field_obstacles_);
+
+  return true;
+}
+
+bool DistanceMapOpencv::processImpl(const costmap_2d::Costmap2D* cost_map)
+{
+  assert(field_obstacles_ && "field_obstacles_ is nullptr !");
+  assert(field_unknowns_  && "field_unknowns_ is nullptr !");
+
+  if (cost_map == nullptr)
+  {
+    ROS_WARN("Received a costmap_2d::Costmap2D* nullptr !");
+    return false;
+  }
+
+  // OccupancyGrid to cv::Mat 8-bit single channel
+  image_ = costMapToMat(*cost_map);
+
+  // conversion into the binary image
+  cv::threshold(image_, binary_image_, 55, 255, cv::THRESH_BINARY);
+
+  // computation of the distance transform on the binary image
+  cv::distanceTransform(binary_image_, distance_field_obstacle_image_, CV_DIST_L2, 3);
+
+  /*
+  // Vizualization of the obstacles distance field grid
+  cv::Mat distance_image_norm_;
+  cv::normalize(distance_field_obstacle_image_, distance_image_norm_, 1, 0, cv::NORM_MINMAX);
+  cv::imshow("original", binary_image_);
+  cv::imshow("distances", distance_image_norm_);
+
+  static const double sec = 1000;
+  const double wait = 30 * sec;
+
+  cv::waitKey(wait);
+  cv::destroyAllWindows();
+  */
+
+  // convert opencv to distance_map_msgs
+  const double resolution = cost_map->getResolution();
+  const double resolution_offset = 0;
+//  const double resolution_offset = resolution / 2;
+  nav_msgs::MapMetaData map_metadata;
+  map_metadata.width  = cost_map->getSizeInCellsX();
+  map_metadata.height = cost_map->getSizeInCellsY();
+  map_metadata.resolution = resolution;
+  map_metadata.origin.position.x = cost_map->getOriginX() - resolution_offset;
+  map_metadata.origin.position.y = cost_map->getOriginY() - resolution_offset;
+  matToDistanceFieldGrid(distance_field_obstacle_image_,
+                         map_metadata, *field_obstacles_);
 
   return true;
 }

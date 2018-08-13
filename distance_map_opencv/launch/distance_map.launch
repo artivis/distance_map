@@ -14,7 +14,7 @@
 
   <include file="$(find distance_map_node)/launch/distance_map.launch">
     <arg name="debug" value="$(arg debug)"/>
-    <arg name="distance_map_type" value="distmap::DistanceMapOpencv"/>
+    <arg name="distance_map_type" value="distmap/DistanceMapOpencv"/>
     <!--arg name="node_config_file" value="$(arg node_config_file)"/-->
     <arg name="topic_in" value="$(arg topic_in)" />
   </include>

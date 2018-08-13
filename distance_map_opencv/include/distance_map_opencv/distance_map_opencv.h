@@ -15,7 +15,7 @@ public:
   ~DistanceMapOpencv() = default;
 
   bool processImpl(const nav_msgs::OccupancyGridConstPtr occ_grid) override;
-  //virtual bool convert(const nav_msgs::OccupancyGridConstPtr occ_grid);
+  bool processImpl(const costmap_2d::Costmap2D* cost_map) override;
 
 protected:
 

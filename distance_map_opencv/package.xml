@@ -21,7 +21,6 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>distance_map_core</depend>
-  <depend>pluginlib</depend>
 
   <depend>OpenCV</depend>
 
