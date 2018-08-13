@@ -2,6 +2,7 @@
 #define _DISTANCE_MAP_CORE_DISTANCE_MAP_BASE_H_
 
 #include <nav_msgs/OccupancyGrid.h>
+#include <costmap_2d/costmap_2d.h>
 
 #include <distance_map_msgs/DistanceFieldGrid.h>
 
@@ -17,6 +18,7 @@ public:
   virtual ~DistanceMapBase() = default;
 
   virtual bool process(const nav_msgs::OccupancyGridConstPtr occ_grid);
+  virtual bool process(const costmap_2d::Costmap2D* cost_map);
   //virtual bool convert(const nav_msgs::OccupancyGridConstPtr occ_grid);
 
   //double cost(const double x, const double y);
@@ -40,8 +42,10 @@ protected:
   virtual bool configureImpl();
 
   virtual void preProcess(const nav_msgs::OccupancyGridConstPtr occ_grid);
+  virtual void preProcess(const costmap_2d::Costmap2D* cost_map);
 
   virtual bool processImpl(const nav_msgs::OccupancyGridConstPtr occ_grid) = 0;
+  virtual bool processImpl(const costmap_2d::Costmap2D* cost_map) = 0;
 
   virtual void postProcess();
 };
@@ -58,6 +62,25 @@ inline bool DistanceMapBase::configureImpl()
 inline void DistanceMapBase::preProcess(const nav_msgs::OccupancyGridConstPtr)
 {
   //
+}
+
+inline void DistanceMapBase::preProcess(const costmap_2d::Costmap2D*)
+{
+  //
+}
+
+bool DistanceMapBase::processImpl(const nav_msgs::OccupancyGridConstPtr)
+{
+  throw std::runtime_error("DistanceMapBase::processImpl is not implemented "
+                           "for input type nav_msgs::OccupancyGridConstPtr !");
+  return false;
+}
+
+bool DistanceMapBase::processImpl(const costmap_2d::Costmap2D*)
+{
+  throw std::runtime_error("DistanceMapBase::processImpl is not implemented "
+                           "for input type costmap_2d::Costmap2D !");
+  return false;
 }
 
 inline void DistanceMapBase::postProcess()

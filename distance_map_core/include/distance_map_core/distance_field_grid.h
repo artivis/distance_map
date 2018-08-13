@@ -165,15 +165,25 @@ void DistanceFieldGrid::cellToPosition(const std::size_t row,
                                        const std::size_t col,
                                        double& x, double& y) const
 {
-  x = /*R*/ double(row) * resolution_ + origin_.x;
-  y = /*R*/ double(col) * resolution_ + origin_.y;
+  /*R*/
+  const double cos_yaw = std::cos(origin_.yaw);
+  const double sin_yaw = std::sin(origin_.yaw);
+  const double xt = double(row) * resolution_ + origin_.x;
+  const double yt = double(col) * resolution_ + origin_.y;
+  x = cos_yaw*xt - sin_yaw*yt;
+  y = sin_yaw*xt + cos_yaw*yt;
 }
 
 void DistanceFieldGrid::positionToCell(const double x, const double y,
                                        std::size_t& row, std::size_t& col) const
 {
-  col = /*R^-1*/ static_cast<std::size_t>(std::floor((x - origin_.x) / resolution_));
-  row = /*R^-1*/ static_cast<std::size_t>(std::floor((y - origin_.y) / resolution_));
+  /*R^-1*/
+  const double cos_yaw = std::cos(origin_.yaw);
+  const double sin_yaw = std::sin(origin_.yaw);
+  const double x_diff = x - origin_.x;
+  const double y_diff = y - origin_.y;
+  col = static_cast<std::size_t>(std::floor(( cos_yaw * x_diff + sin_yaw * y_diff) / resolution_));
+  row = static_cast<std::size_t>(std::floor((-sin_yaw * x_diff + cos_yaw * y_diff) / resolution_));
 }
 
 double DistanceFieldGrid::atCell(const std::size_t row, const std::size_t col) const
@@ -279,14 +289,26 @@ void DistanceFieldGrid::assertIsValidCell(const std::size_t& row, const std::siz
 {
   if (!isCellValid(row,col))
     throw std::out_of_range("Cell index " + std::to_string(row) +
-                            ", " + std::to_string(col) + " is out of range !");
+                            ", " + std::to_string(col) + " is out of range !\n"
+                            "Origin ["  + std::to_string(origin_.x) + ","
+                                        + std::to_string(origin_.y) + ","
+                                        + std::to_string(origin_.yaw) + "], "
+                            "Dimension [" + std::to_string(dimension_.width) + ","
+                                          + std::to_string(dimension_.height) + "],"
+                            "Resolution " + std::to_string(resolution_) + ".");
 }
 
 void DistanceFieldGrid::assertIsValidPosition(const double& x, const double& y) const
 {
   if (!isPositionValid(x,y))
     throw std::out_of_range("Position " + std::to_string(x) +
-                            ", " + std::to_string(y) + " is out of range !");
+                            ", " + std::to_string(y) + " is out of range !\n"
+                            "Origin ["  + std::to_string(origin_.x) + ","
+                                        + std::to_string(origin_.y) + ","
+                                        + std::to_string(origin_.yaw) + "], "
+                            "Dimension [" + std::to_string(dimension_.width) + ","
+                                          + std::to_string(dimension_.height) + "],"
+                            "Resolution " + std::to_string(resolution_) + ".");
 }
 
 template <typename Stream>

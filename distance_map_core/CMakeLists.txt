@@ -10,14 +10,24 @@ else()
 endif()
 
 find_package(catkin REQUIRED COMPONENTS
+  costmap_2d
   distance_map_msgs
+  nav_msgs
+  pluginlib
   roscpp
+  tf2
 )
 
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
-  CATKIN_DEPENDS distance_map_msgs roscpp
+  CATKIN_DEPENDS
+    costmap_2d
+    distance_map_msgs
+    nav_msgs
+    pluginlib
+    roscpp
+    tf2
   #DEPENDS
 )
 

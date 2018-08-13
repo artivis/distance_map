@@ -13,8 +13,12 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
-  <depend>roscpp</depend>
+  <depend>costmap_2d</depend>
   <depend>distance_map_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>pluginlib</depend>
+  <depend>roscpp</depend>
+  <depend>tf2</depend>
 
   <export>
     <!-- -->
