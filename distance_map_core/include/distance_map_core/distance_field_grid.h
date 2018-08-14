@@ -86,9 +86,9 @@ protected:
 
   bool initialized_ = false;
 
-  Dimension dimension_;
+  Dimension dimension_; ///< @brief Dimension of the grid in cells.
   double resolution_ = 1;
-  Origin origin_; ///< @brief The 2-D pose of the lower-left pixel in the map
+  Origin origin_; ///< @brief The 2-D pose of the bottom-left pixel in the map.
 
   double* data_;
 
