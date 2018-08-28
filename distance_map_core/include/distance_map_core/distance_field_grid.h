@@ -1,7 +1,9 @@
 #ifndef _DISTANCE_MAP_CORE_DISTANCE_FIELD_GRID_H_
 #define _DISTANCE_MAP_CORE_DISTANCE_FIELD_GRID_H_
 
+#include <cmath>
 #include <stdexcept>
+#include <memory>
 
 namespace distmap {
 
@@ -17,7 +19,8 @@ public:
 
   struct Origin
   {
-    Origin()  = default;
+    // see https://stackoverflow.com/a/17436088/9709397
+    Origin()  {}//= default;
     ~Origin() = default;
 
     Origin(const double x, const double y,
@@ -34,8 +37,8 @@ public:
   };
 
   DistanceFieldGrid(const Dimension& dimension,
-                    const double resolution,
-                    const Origin& origin /*= Origin()*/);
+                    const double resolution = 1,
+                    const Origin& origin = Origin());
 
   ~DistanceFieldGrid();
 
@@ -135,6 +138,7 @@ protected:
   double resolution_ = 1;
   Origin origin_; ///< @brief The 2-D pose of the bottom-left pixel in the map.
 
+  /// @brief 2D grid data. Col-major.
   double* data_;
 
   std::size_t getIndex(const std::size_t row, const std::size_t col) const;
@@ -223,12 +227,31 @@ void DistanceFieldGrid::positionToCell(const double x, const double y,
                                        std::size_t& row, std::size_t& col) const
 {
   /*R^-1*/
-  const double cos_yaw = std::cos(origin_.yaw);
-  const double sin_yaw = std::sin(origin_.yaw);
-  const double x_diff = x - origin_.x;
-  const double y_diff = y - origin_.y;
-  col = static_cast<std::size_t>(std::floor(( cos_yaw * x_diff + sin_yaw * y_diff) / resolution_));
-  row = static_cast<std::size_t>(std::floor((-sin_yaw * x_diff + cos_yaw * y_diff) / resolution_));
+  const double cos_yaw = std::cos(-origin_.yaw);
+  const double sin_yaw = std::sin(-origin_.yaw);
+  const double x_diff = (x - origin_.x);
+  const double y_diff = (y - origin_.y);
+  std::cout << "bb "
+            << "x_diff " << x_diff << " y_diff " << y_diff << " "
+            << "x' " << (( cos_yaw * x_diff - sin_yaw * y_diff) ) << " "
+            << "y' " << ((+sin_yaw * x_diff + cos_yaw * y_diff) ) << " "
+            << "x' " << (( cos_yaw * x_diff - sin_yaw * y_diff) / resolution_ ) << " "
+            << "y' " << ((+sin_yaw * x_diff + cos_yaw * y_diff) / resolution_ ) << "\n";
+  row = static_cast<std::size_t>(std::floor((cos_yaw * x_diff - sin_yaw * y_diff) / resolution_));
+  col = static_cast<std::size_t>(std::floor((sin_yaw * x_diff + cos_yaw * y_diff) / resolution_));
+
+//  const double cos_yaw = std::cos(origin_.yaw - M_PI_2);
+//  const double sin_yaw = std::sin(origin_.yaw - M_PI_2);
+//  const double x_diff = x - origin_.x;
+//  const double y_diff = y /*- origin_.y*/ + dimension_.height; //DERE
+//  col = static_cast<std::size_t>(std::floor(( cos_yaw * x_diff + sin_yaw * y_diff) / resolution_));
+//  row = static_cast<std::size_t>(std::floor((-sin_yaw * x_diff + cos_yaw * y_diff) / resolution_));
+
+//  col = static_cast<std::size_t>(std::floor(( cos_yaw * x_diff + sin_yaw * y_diff) / resolution_));
+//  row = static_cast<std::size_t>(std::floor((-sin_yaw * x_diff + cos_yaw * y_diff) / resolution_));
+
+  std::cout << "Position " << x << "," << y
+            << " converted to " << row << "," << col << "\n";
 }
 
 double DistanceFieldGrid::atCell(const std::size_t row, const std::size_t col) const
@@ -247,27 +270,82 @@ double DistanceFieldGrid::atPosition(const double x, const double y) const
 {
   assertIsValidPosition(x,y);
 
-  const double lx = std::floor(x),
-               ly = std::floor(y);
-  const double hx = lx + 1.0,
-               hy = ly + 1.0;
+  std::size_t row, col;
+  positionToCell(x,y,row,col);
 
-  std::size_t lxi,lyi,hxi,hyi;
-  positionToCell(lx,ly,lxi,lyi);
-  positionToCell(hx,hy,hxi,hyi);
+  return atCell(row,col) * resolution_;
 
-  return
-      (hx-x)*(hy-y)*data_[getIndex(lxi, lyi)] +
-      (x-lx)*(hy-y)*data_[getIndex(hxi, lyi)] +
-      (hx-x)*(y-ly)*data_[getIndex(lxi, hyi)] +
-      (x-lx)*(y-ly)*data_[getIndex(hxi, hyi)] ;
+//  const double lx = std::floor(x),
+//               ly = std::floor(y);
+
+//  const double hx = lx + resolution_,
+//               hy = ly + resolution_;
+
+//  std::size_t lxi,lyi,hxi,hyi;
+//  positionToCell(lx,ly,lxi,lyi);
+
+//  isPositionValid(hx, hy)?
+//    positionToCell(hx,hy,hxi,hyi)    :
+//    positionToCell(hx-resolution_,
+//                   hy-resolution_,
+//                   hxi,hyi);
+
+//  std::cout << x << "," << y << "\n";
+//  std::cout << lxi << "," << lyi << "\n";
+//  std::cout << hxi << "," << hyi << "\n";
+//  std::cout << (hx-x)*(hy-y) << "," << (x-lx)*(hy-y) << ","
+//            << (hx-x)*(y-ly) << "," << (x-lx)*(y-ly) << "\n";
+//  std::cout << "Q1 " << (hx+1-x)*(hy+1-y)*atCell(lxi, lyi) << "\n";
+//  std::cout << "Q2 " << (x-lx)*(hy+1-y)*atCell(hxi, lyi) << "\n";
+//  std::cout << "Q3 " << (hx+1-x)*(y-ly)*atCell(lxi, hyi) << "\n";
+//  std::cout << "Q4 " << (x-lx)*(y-ly)*atCell(hxi, hyi) << "\n";
+
+//  return (hx+1-x)*(hy+1-y)*atCell(lxi, lyi) +
+//         (x-lx)*(hy+1-y)*atCell(hxi, lyi) +
+//         (hx+1-x)*(y-ly)*atCell(lxi, hyi) +
+//         (x-lx)*(y-ly)*atCell(hxi, hyi) ;
+
+//  const double lx = std::floor(x),
+//               ly = std::floor(y);
+
+//  const double hx = lx + 1,
+//               hy = ly + 1;
+
+//  std::size_t lxi,lyi,hxi,hyi;
+//  positionToCell(lx,ly,lxi,lyi);
+
+//  if (isCellValid(lxi+1,lyi+1))
+//  {
+//    hxi = lxi+1;
+//    hyi = lyi+1;
+//  }
+//  else
+//  {
+//    hxi = lxi;
+//    hyi = lyi;
+//  }
+
+//  std::cout << x << "," << y << "\n";
+//  std::cout << lxi << "," << lyi << "\n";
+//  std::cout << hxi << "," << hyi << "\n";
+//  std::cout << (hx-x)*(hy-y) << "," << (x-lx)*(hy-y) << ","
+//            << (hx-x)*(y-ly) << "," << (x-lx)*(y-ly) << "\n";
+//  std::cout << "Q1 " << (hx-x)*(hy-y)*atCell(lxi, lyi) << "\n";
+//  std::cout << "Q2 " << (x-lx)*(hy-y)*atCell(hxi, lyi) << "\n";
+//  std::cout << "Q3 " << (hx-x)*(y-ly)*atCell(lxi, hyi) << "\n";
+//  std::cout << "Q4 " << (x-lx)*(y-ly)*atCell(hxi, hyi) << "\n";
+
+//  return (hx-x)*(hy-y)*atCell(lxi, lyi) +
+//         (x-lx)*(hy-y)*atCell(hxi, lyi) +
+//         (hx-x)*(y-ly)*atCell(lxi, hyi) +
+//         (x-lx)*(y-ly)*atCell(hxi, hyi) ;
 }
 
 double DistanceFieldGrid::atPositionSafe(const double x, const double y) const
 {
   /// @todo return -dist_to_in_bound ?
   double d = 0;
-  if (isPositionValid(x,y) && isPositionValid(x+1,y+1))
+  if (isPositionValid(x,y)/* && isPositionValid(x+1,y+1)*/)
   {
     d = atPosition(x,y);
   }
@@ -403,7 +481,8 @@ DistanceFieldGrid::getOrigin() const noexcept
 
 std::size_t DistanceFieldGrid::getIndex(const std::size_t row, const std::size_t col) const
 {
-  return col + (dimension_.height - row - 1) * dimension_.width;
+  //return col + (dimension_.height - row - 1) * dimension_.width;
+  return row * dimension_.width + col;
 }
 
 void DistanceFieldGrid::assertIsValidCell(const std::size_t& row, const std::size_t& col) const

@@ -75,8 +75,5 @@ install(DIRECTORY include/${PROJECT_NAME}/
 ################
 
 if(CATKIN_ENABLE_TESTING)
-
-  #MESSAGE("Building tests.")
-  #add_subdirectory(test)
-
+  add_subdirectory(test)
 endif()
