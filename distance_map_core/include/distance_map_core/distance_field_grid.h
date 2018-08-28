@@ -59,6 +59,14 @@ public:
   double atCell(const std::size_t row, const std::size_t col) const;
 
   /**
+   * @brief atCellSafe, if cell is out of bound, return 0 (obstacle).
+   * @param row
+   * @param col
+   * @return The distance to the closest black (0) cell, in cell unit.
+   */
+  double atCellSafe(const std::size_t row, const std::size_t col) const;
+
+  /**
    * @brief atPosition
    * @param x,
    * @param y
@@ -66,8 +74,45 @@ public:
    */
   double atPosition(const double x, const double y) const;
 
+  /**
+   * @brief atPositionSafe, if position is out of bound, return 0 (obstacle).
+   * @param x
+   * @param y
+   * @return The distance to the closest black (0) cell, in m unit.
+   */
+  double atPositionSafe(const double x, const double y) const;
+
+  /**
+   * @brief gradientAtCell
+   * @param row
+   * @param col
+   * @return
+   */
   Gradient gradientAtCell(std::size_t row, std::size_t col) const;
+
+  /**
+   * @brief gradientAtPosition
+   * @param x
+   * @param y
+   * @return
+   */
   Gradient gradientAtPosition(const double x, const double y) const;
+
+  /**
+   * @brief gradientAtCellSafe
+   * @param row
+   * @param col
+   * @return
+   */
+  Gradient gradientAtCellSafe(std::size_t row, std::size_t col) const;
+
+  /**
+   * @brief gradientAtPositionSafe
+   * @param x
+   * @param y
+   * @return
+   */
+  Gradient gradientAtPositionSafe(const double x, const double y) const;
 
   // Setter/getter
 
@@ -192,14 +237,41 @@ double DistanceFieldGrid::atCell(const std::size_t row, const std::size_t col) c
   return data_[getIndex(row, col)];
 }
 
+double DistanceFieldGrid::atCellSafe(const std::size_t row, const std::size_t col) const
+{
+  /// @todo return -dist_to_in_bound ?
+  return isCellValid(row,col)? data_[getIndex(row, col)] : 0;
+}
+
 double DistanceFieldGrid::atPosition(const double x, const double y) const
 {
   assertIsValidPosition(x,y);
 
-  std::size_t row, col;
-  positionToCell(x,y,row,col);
+  const double lx = std::floor(x),
+               ly = std::floor(y);
+  const double hx = lx + 1.0,
+               hy = ly + 1.0;
 
-  return atCell(row,col) * resolution_;
+  std::size_t lxi,lyi,hxi,hyi;
+  positionToCell(lx,ly,lxi,lyi);
+  positionToCell(hx,hy,hxi,hyi);
+
+  return
+      (hx-x)*(hy-y)*data_[getIndex(lxi, lyi)] +
+      (x-lx)*(hy-y)*data_[getIndex(hxi, lyi)] +
+      (hx-x)*(y-ly)*data_[getIndex(lxi, hyi)] +
+      (x-lx)*(y-ly)*data_[getIndex(hxi, hyi)] ;
+}
+
+double DistanceFieldGrid::atPositionSafe(const double x, const double y) const
+{
+  /// @todo return -dist_to_in_bound ?
+  double d = 0;
+  if (isPositionValid(x,y) && isPositionValid(x+1,y+1))
+  {
+    d = atPosition(x,y);
+  }
+  return d;
 }
 
 DistanceFieldGrid::Gradient
@@ -223,16 +295,65 @@ DistanceFieldGrid::gradientAtCell(std::size_t row, std::size_t col) const
 }
 
 DistanceFieldGrid::Gradient
-DistanceFieldGrid::gradientAtPosition(const double x, const double y) const
+DistanceFieldGrid::gradientAtPosition(double x, double y) const
 {
   assertIsValidPosition(x,y);
+  assertIsValidPosition(x+1,y+1);
 
-  std::size_t row, col;
-  positionToCell(x,y,row,col);
+  const double lx = std::floor(x),
+               ly = std::floor(y);
+  const double hx = lx + 1.0,
+               hy = ly + 1.0;
 
-  auto grad = gradientAtCell(row,col);
-  grad.dx *= resolution_;
-  grad.dy *= resolution_;
+  Gradient grad;
+
+  grad.dx = (hy-y) * (atPosition(hx, ly)-atPosition(lx, ly)) +
+            (y-ly) * (atPosition(hx, hy)-atPosition(lx, hy));
+
+  grad.dy = (hx-x) * (atPosition(lx, hy)-atPosition(lx, ly)) +
+            (x-lx) * (atPosition(hx, hy)-atPosition(hx, ly));
+
+  return grad;
+}
+
+DistanceFieldGrid::Gradient
+DistanceFieldGrid::gradientAtCellSafe(std::size_t row, std::size_t col) const
+{
+  Gradient grad;
+  if (isCellValid(row,col))
+  {
+    // handle borders
+    row = std::max(row, std::size_t(1));
+    col = std::max(col, std::size_t(1));
+
+    row = std::min(row, dimension_.height-2);
+    col = std::min(col, dimension_.width -2);
+
+    grad.dx = (atCell(row, col-1) - atCell(row, col+1)) / 2.;
+    grad.dy = (atCell(row-1, col) - atCell(row+1, col)) / 2.;
+  }
+  else
+  {
+    grad.dx = (row>dimension_.height-2)? row-dimension_.height-2 : 0;
+    grad.dy = (col>dimension_.width -2)? col-dimension_.width -2 : 0;
+  }
+
+  return grad;
+}
+
+DistanceFieldGrid::Gradient
+DistanceFieldGrid::gradientAtPositionSafe(const double x, const double y) const
+{
+  const double lx = std::floor(x),
+               ly = std::floor(y);
+  const double hx = lx + 1.0,
+               hy = ly + 1.0;
+  Gradient grad;
+
+  grad.dx = (hy-y) * (atPositionSafe(hx, ly)-atPositionSafe(lx, ly)) +
+            (y-ly) * (atPositionSafe(hx, hy)-atPositionSafe(lx, hy));
+  grad.dy = (hx-x) * (atPositionSafe(lx, hy)-atPositionSafe(lx, ly)) +
+            (x-lx) * (atPositionSafe(hx, hy)-atPositionSafe(hx, ly));
 
   return grad;
 }

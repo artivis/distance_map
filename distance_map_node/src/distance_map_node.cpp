@@ -51,6 +51,8 @@ void DistanceMapNode::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
 
   if (dist_map_ptr_->process(occ_grid))
   {
+//    publish();
+
     auto distmap_ptr = dist_map_ptr_->getDistanceFieldObstacle();
 
     assert(distmap_ptr != nullptr && "distmap_ptr == nullptr !");

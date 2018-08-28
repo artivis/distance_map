@@ -33,6 +33,8 @@ protected:
   ros::Subscriber map_sub_;
 
   ros::Publisher field_obstacles_pub_, field_unknowns_pub_;
+
+//  void publish();
 };
 
 } /* namespace distmap */

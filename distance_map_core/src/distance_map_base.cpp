@@ -102,8 +102,8 @@ bool DistanceMapBase::process(const costmap_2d::Costmap2D* cost_map)
                                                    cost_map->getOriginY() - resolution_offset,
                                                    0));
   }
-  else if (field_obstacles_->getOrigin().x != (cost_map->getOriginX() - resolution_offset) or
-           field_obstacles_->getOrigin().y != (cost_map->getOriginY() - resolution_offset))
+  if (field_obstacles_->getOrigin().x != (cost_map->getOriginX() - resolution_offset) or
+      field_obstacles_->getOrigin().y != (cost_map->getOriginY() - resolution_offset))
   {
     field_obstacles_->setOrigin(
           DistanceFieldGrid::Origin(cost_map->getOriginX() - resolution_offset,
@@ -125,8 +125,8 @@ bool DistanceMapBase::process(const costmap_2d::Costmap2D* cost_map)
                                                    cost_map->getOriginY() - resolution_offset,
                                                    0));
   }
-  else if (field_unknowns_->getOrigin().x != (cost_map->getOriginX() - resolution_offset) or
-           field_unknowns_->getOrigin().y != (cost_map->getOriginY() - resolution_offset))
+  if (field_unknowns_->getOrigin().x != (cost_map->getOriginX() - resolution_offset) or
+      field_unknowns_->getOrigin().y != (cost_map->getOriginY() - resolution_offset))
   {
     field_unknowns_->setOrigin(
           DistanceFieldGrid::Origin(cost_map->getOriginX() - resolution_offset,
