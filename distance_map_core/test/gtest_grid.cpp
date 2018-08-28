@@ -14,6 +14,14 @@ struct GridTest : public testing::Test
     for (int i=0; i<3*3; ++i)
       *(default_grid.data()+i) = i;
 
+    // pattern
+    //
+    // 1 1 1 2 3
+    // 1 0 1 2 3
+    // 1 1 1 2 3
+    // 2 2 2 2 3
+    // 3 3 3 3 3
+
     *(grid.data()+ 0) = 1;
     *(grid.data()+ 1) = 1;
     *(grid.data()+ 2) = 1;
@@ -200,35 +208,35 @@ TEST_F(GridTest, TEST_GRID)
 
   ///
 
-//  EXPECT_DOUBLE_EQ(1, grid.atPosition(0,0));
-//  EXPECT_DOUBLE_EQ(1, grid.atPosition(0,1));
-//  EXPECT_DOUBLE_EQ(1, grid.atPosition(0,2));
-//  EXPECT_DOUBLE_EQ(2, grid.atPosition(0,3));
-//  EXPECT_DOUBLE_EQ(3, grid.atPosition(0,4));
+  EXPECT_DOUBLE_EQ(1, grid.atPosition(0,0));
+  EXPECT_DOUBLE_EQ(1, grid.atPosition(0,1));
+  EXPECT_DOUBLE_EQ(1, grid.atPosition(0,2));
+  EXPECT_DOUBLE_EQ(2, grid.atPosition(0,3));
+  EXPECT_DOUBLE_EQ(3, grid.atPosition(0,4));
 
-//  EXPECT_DOUBLE_EQ(1, grid.atPosition(1,0));
-//  EXPECT_DOUBLE_EQ(0, grid.atPosition(1,1));
-//  EXPECT_DOUBLE_EQ(1, grid.atPosition(1,2));
-//  EXPECT_DOUBLE_EQ(2, grid.atPosition(1,3));
-//  EXPECT_DOUBLE_EQ(3, grid.atPosition(1,4));
+  EXPECT_DOUBLE_EQ(1, grid.atPosition(1,0));
+  EXPECT_DOUBLE_EQ(0, grid.atPosition(1,1));
+  EXPECT_DOUBLE_EQ(1, grid.atPosition(1,2));
+  EXPECT_DOUBLE_EQ(2, grid.atPosition(1,3));
+  EXPECT_DOUBLE_EQ(3, grid.atPosition(1,4));
 
-//  EXPECT_DOUBLE_EQ(1, grid.atPosition(2,0));
-//  EXPECT_DOUBLE_EQ(1, grid.atPosition(2,1));
-//  EXPECT_DOUBLE_EQ(1, grid.atPosition(2,2));
-//  EXPECT_DOUBLE_EQ(2, grid.atPosition(2,3));
-//  EXPECT_DOUBLE_EQ(3, grid.atPosition(2,4));
+  EXPECT_DOUBLE_EQ(1, grid.atPosition(2,0));
+  EXPECT_DOUBLE_EQ(1, grid.atPosition(2,1));
+  EXPECT_DOUBLE_EQ(1, grid.atPosition(2,2));
+  EXPECT_DOUBLE_EQ(2, grid.atPosition(2,3));
+  EXPECT_DOUBLE_EQ(3, grid.atPosition(2,4));
 
-//  EXPECT_DOUBLE_EQ(2, grid.atPosition(3,0));
-//  EXPECT_DOUBLE_EQ(2, grid.atPosition(3,1));
-//  EXPECT_DOUBLE_EQ(2, grid.atPosition(3,2));
-//  EXPECT_DOUBLE_EQ(2, grid.atPosition(3,3));
-//  EXPECT_DOUBLE_EQ(3, grid.atPosition(3,4));
+  EXPECT_DOUBLE_EQ(2, grid.atPosition(3,0));
+  EXPECT_DOUBLE_EQ(2, grid.atPosition(3,1));
+  EXPECT_DOUBLE_EQ(2, grid.atPosition(3,2));
+  EXPECT_DOUBLE_EQ(2, grid.atPosition(3,3));
+  EXPECT_DOUBLE_EQ(3, grid.atPosition(3,4));
 
-//  EXPECT_DOUBLE_EQ(3, grid.atPosition(4,0));
-//  EXPECT_DOUBLE_EQ(3, grid.atPosition(4,1));
-//  EXPECT_DOUBLE_EQ(3, grid.atPosition(4,2));
-//  EXPECT_DOUBLE_EQ(3, grid.atPosition(4,3));
-//  EXPECT_DOUBLE_EQ(3, grid.atPosition(4,4));
+  EXPECT_DOUBLE_EQ(3, grid.atPosition(4,0));
+  EXPECT_DOUBLE_EQ(3, grid.atPosition(4,1));
+  EXPECT_DOUBLE_EQ(3, grid.atPosition(4,2));
+  EXPECT_DOUBLE_EQ(3, grid.atPosition(4,3));
+  EXPECT_DOUBLE_EQ(3, grid.atPosition(4,4));
 
   ///
 
@@ -236,35 +244,35 @@ TEST_F(GridTest, TEST_GRID)
     grid.setResolution(0.5);
   );
 
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(0,0));
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(0,1./2));
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(0,2./2));
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(0,3./2));
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(0,4./2));
+  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(0,0));
+  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(0,1./2));
+  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(0,2./2));
+  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(0,3./2));
+  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(0,4./2));
 
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(1./2,0));
-//  EXPECT_DOUBLE_EQ(0./2, grid.atPosition(1./2.,1./2.));
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(1./2,2./2));
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(1./2,3./2));
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(1./2,4./2));
+  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(1./2,0));
+  EXPECT_DOUBLE_EQ(0./2, grid.atPosition(1./2.,1./2.));
+  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(1./2,2./2));
+  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(1./2,3./2));
+  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(1./2,4./2));
 
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(2./2,0));
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(2./2,1./2));
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(2./2,2./2));
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(2./2,3./2));
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(2./2,4./2));
+  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(2./2,0));
+  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(2./2,1./2));
+  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(2./2,2./2));
+  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(2./2,3./2));
+  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(2./2,4./2));
 
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(3./2,0));
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(3./2,1./2));
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(3./2,2./2));
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(3./2,3./2));
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(3./2,4./2));
+  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(3./2,0));
+  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(3./2,1./2));
+  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(3./2,2./2));
+  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(3./2,3./2));
+  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(3./2,4./2));
 
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2,0));
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2,1./2));
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2,2./2));
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2,3./2));
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2,4./2));
+  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2,0));
+  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2,1./2));
+  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2,2./2));
+  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2,3./2));
+  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2,4./2));
 
   ///
 
@@ -338,82 +346,78 @@ TEST_F(GridTest, TEST_GRID)
   EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2.+1.2,3./2.+4.7));
   EXPECT_DOUBLE_EQ(3./2, grid.atPosition(4./2.+1.2,4./2.+4.7));
 
-  double orig_x = 1.2;
-  double orig_y = 4.7;
-  double orig_t = M_PI;
+  ASSERT_NO_THROW(
+    grid.setOrigin(distmap::DistanceFieldGrid::Origin(3.17,-4.44,-M_PI/3));
+    grid.setResolution(0.44);
+  );
 
   const auto proj = [&](double& x, double& y)
   {
-    const double xo = x, yo = y;
-    const double cos_yaw = std::cos(orig_t);
-    const double sin_yaw = std::sin(orig_t);
+    //std::cout << "proj " << x << "," << y;
 
-    x = cos_yaw*xo - sin_yaw*yo + orig_x;
-    y = sin_yaw*xo + cos_yaw*yo + orig_y;
+    const auto row = static_cast<std::size_t>(x);
+    const auto col = static_cast<std::size_t>(y);
+    grid.cellToPosition(row,col,x,y);
+
+    //std::cout << " => " << x << "," << y << "\n";
   };
 
-  ASSERT_NO_THROW(
-    grid.setOrigin(distmap::DistanceFieldGrid::Origin(orig_x,orig_y,orig_t));
-    grid.setResolution(0.5);
-  );
-
-  double px,
-         py;
+  double px, py;
 
   px=0; py=0; proj(px, py);
-  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(px,py));
+  EXPECT_DOUBLE_EQ(1.* grid.getResolution(), grid.atPosition(px,py));
   px=0; py=1; proj(px, py);
-  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(px,py));
+  EXPECT_DOUBLE_EQ(1.* grid.getResolution(), grid.atPosition(px,py));
   px=0; py=2; proj(px, py);
-  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(px,py));
+  EXPECT_DOUBLE_EQ(1.* grid.getResolution(), grid.atPosition(px,py));
   px=0; py=3; proj(px, py);
-  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(px,py));
+  EXPECT_DOUBLE_EQ(2.* grid.getResolution(), grid.atPosition(px,py));
   px=0; py=4; proj(px, py);
-  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(px,py));
+  EXPECT_DOUBLE_EQ(3.* grid.getResolution(), grid.atPosition(px,py));
 
-//  px=1; py=0; proj(px, py);
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(px,py));
-//  px=1; py=1; proj(px, py);
-//  EXPECT_DOUBLE_EQ(0./2, grid.atPosition(px,py));
-//  px=1; py=2; proj(px, py);
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(px,py));
-//  px=1; py=3; proj(px, py);
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(px,py));
-//  px=1; py=4; proj(px, py);
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(px,py));
+  px=1; py=0; proj(px, py);
+  EXPECT_DOUBLE_EQ(1.* grid.getResolution(), grid.atPosition(px,py));
+  px=1; py=1; proj(px, py);
+  EXPECT_DOUBLE_EQ(0.* grid.getResolution(), grid.atPosition(px,py));
+  px=1; py=2; proj(px, py);
+  EXPECT_DOUBLE_EQ(1.* grid.getResolution(), grid.atPosition(px,py));
+  px=1; py=3; proj(px, py);
+  EXPECT_DOUBLE_EQ(2.* grid.getResolution(), grid.atPosition(px,py));
+  px=1; py=4; proj(px, py);
+  EXPECT_DOUBLE_EQ(3.* grid.getResolution(), grid.atPosition(px,py));
 
-//  px=2; py=0; proj(px, py);
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(px,py));
-//  px=2; py=1; proj(px, py);
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(px,py));
-//  px=2; py=2; proj(px, py);
-//  EXPECT_DOUBLE_EQ(1./2, grid.atPosition(px,py));
-//  px=2; py=3; proj(px, py);
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(px,py));
-//  px=2; py=4; proj(px, py);
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(px,py));
+  px=2; py=0; proj(px, py);
+  EXPECT_DOUBLE_EQ(1.* grid.getResolution(), grid.atPosition(px,py));
+  px=2; py=1; proj(px, py);
+  EXPECT_DOUBLE_EQ(1.* grid.getResolution(), grid.atPosition(px,py));
+  px=2; py=2; proj(px, py);
+  EXPECT_DOUBLE_EQ(1.* grid.getResolution(), grid.atPosition(px,py));
+  px=2; py=3; proj(px, py);
+  EXPECT_DOUBLE_EQ(2.* grid.getResolution(), grid.atPosition(px,py));
+  px=2; py=4; proj(px, py);
+  EXPECT_DOUBLE_EQ(3.* grid.getResolution(), grid.atPosition(px,py));
 
-//  px=3; py=0; proj(px, py);
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(px,py));
-//  px=3; py=1; proj(px, py);
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(px,py));
-//  px=3; py=2; proj(px, py);
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(px,py));
-//  px=3; py=3; proj(px, py);
-//  EXPECT_DOUBLE_EQ(2./2, grid.atPosition(px,py));
-//  px=3; py=4; proj(px, py);
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(px,py));
+  px=3; py=0; proj(px, py);
+  EXPECT_DOUBLE_EQ(2.* grid.getResolution(), grid.atPosition(px,py));
+  px=3; py=1; proj(px, py);
+  EXPECT_DOUBLE_EQ(2.* grid.getResolution(), grid.atPosition(px,py));
+  px=3; py=2; proj(px, py);
+  EXPECT_DOUBLE_EQ(2.* grid.getResolution(), grid.atPosition(px,py));
+  px=3; py=3; proj(px, py);
+  EXPECT_DOUBLE_EQ(2.* grid.getResolution(), grid.atPosition(px,py));
+  px=3; py=4; proj(px, py);
+  EXPECT_DOUBLE_EQ(3.* grid.getResolution(), grid.atPosition(px,py));
 
-//  px=4; py=0; proj(px, py);
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(px,py));
-//  px=4; py=1; proj(px, py);
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(px,py));
-//  px=4; py=2; proj(px, py);
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(px,py));
-//  px=4; py=3; proj(px, py);
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(px,py));
-//  px=4; py=4; proj(px, py);
-//  EXPECT_DOUBLE_EQ(3./2, grid.atPosition(px,py));
+  px=4; py=0; proj(px, py);
+  EXPECT_DOUBLE_EQ(3.* grid.getResolution(), grid.atPosition(px,py));
+  px=4; py=1; proj(px, py);
+  EXPECT_DOUBLE_EQ(3.* grid.getResolution(), grid.atPosition(px,py));
+  px=4; py=2; proj(px, py);
+  EXPECT_DOUBLE_EQ(3.* grid.getResolution(), grid.atPosition(px,py));
+  px=4; py=3; proj(px, py);
+  EXPECT_DOUBLE_EQ(3.* grid.getResolution(), grid.atPosition(px,py));
+  px=4; py=4; proj(px, py);
+  EXPECT_DOUBLE_EQ(3.* grid.getResolution(), grid.atPosition(px,py));
 }
 
 int main(int argc, char** argv)

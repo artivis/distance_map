@@ -214,44 +214,31 @@ void DistanceFieldGrid::cellToPosition(const std::size_t row,
                                        const std::size_t col,
                                        double& x, double& y) const
 {
-  /*R*/
-  const double cos_yaw = std::cos(origin_.yaw);
-  const double sin_yaw = std::sin(origin_.yaw);
-  const double xt = double(row) * resolution_ + origin_.x;
-  const double yt = double(col) * resolution_ + origin_.y;
-  x = cos_yaw*xt - sin_yaw*yt;
-  y = sin_yaw*xt + cos_yaw*yt;
+  /* Sim2 * p */
+  const double cos_yaw = std::cos(origin_.yaw) * resolution_;
+  const double sin_yaw = std::sin(origin_.yaw) * resolution_;
+  x = cos_yaw*row - sin_yaw*col + origin_.x;
+  y = sin_yaw*row + cos_yaw*col + origin_.y;
 }
 
 void DistanceFieldGrid::positionToCell(const double x, const double y,
                                        std::size_t& row, std::size_t& col) const
 {
-  /*R^-1*/
-  const double cos_yaw = std::cos(-origin_.yaw);
-  const double sin_yaw = std::sin(-origin_.yaw);
-  const double x_diff = (x - origin_.x);
-  const double y_diff = (y - origin_.y);
-  std::cout << "bb "
-            << "x_diff " << x_diff << " y_diff " << y_diff << " "
-            << "x' " << (( cos_yaw * x_diff - sin_yaw * y_diff) ) << " "
-            << "y' " << ((+sin_yaw * x_diff + cos_yaw * y_diff) ) << " "
-            << "x' " << (( cos_yaw * x_diff - sin_yaw * y_diff) / resolution_ ) << " "
-            << "y' " << ((+sin_yaw * x_diff + cos_yaw * y_diff) / resolution_ ) << "\n";
-  row = static_cast<std::size_t>(std::floor((cos_yaw * x_diff - sin_yaw * y_diff) / resolution_));
-  col = static_cast<std::size_t>(std::floor((sin_yaw * x_diff + cos_yaw * y_diff) / resolution_));
+  /* Sim2^-1 * p */
+  double cos_yaw = std::cos(origin_.yaw) * resolution_;
+  double sin_yaw = std::sin(origin_.yaw) * resolution_;
+  const double sq = cos_yaw*cos_yaw + sin_yaw*sin_yaw;
 
-//  const double cos_yaw = std::cos(origin_.yaw - M_PI_2);
-//  const double sin_yaw = std::sin(origin_.yaw - M_PI_2);
-//  const double x_diff = x - origin_.x;
-//  const double y_diff = y /*- origin_.y*/ + dimension_.height; //DERE
-//  col = static_cast<std::size_t>(std::floor(( cos_yaw * x_diff + sin_yaw * y_diff) / resolution_));
-//  row = static_cast<std::size_t>(std::floor((-sin_yaw * x_diff + cos_yaw * y_diff) / resolution_));
+  cos_yaw =  cos_yaw / sq;
+  sin_yaw = -sin_yaw / sq;
+  const double xo = -(cos_yaw * origin_.x - sin_yaw * origin_.y);
+  const double yo = -(sin_yaw * origin_.x + cos_yaw * origin_.y);
 
-//  col = static_cast<std::size_t>(std::floor(( cos_yaw * x_diff + sin_yaw * y_diff) / resolution_));
-//  row = static_cast<std::size_t>(std::floor((-sin_yaw * x_diff + cos_yaw * y_diff) / resolution_));
+  /// @note Forces 0.5 to round up
+  constexpr double eps = 1e-8;
 
-  std::cout << "Position " << x << "," << y
-            << " converted to " << row << "," << col << "\n";
+  row = static_cast<std::size_t>((cos_yaw * x - sin_yaw * y) + xo + eps);
+  col = static_cast<std::size_t>((sin_yaw * x + cos_yaw * y) + yo + eps);
 }
 
 double DistanceFieldGrid::atCell(const std::size_t row, const std::size_t col) const
