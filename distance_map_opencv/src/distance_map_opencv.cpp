@@ -55,16 +55,13 @@ cv::Mat costMapToMat(const costmap_2d::Costmap2D& costmap)
 }
 
 void matToDistanceFieldGrid(const cv::Mat& cv_map,
-                            const nav_msgs::MapMetaData& map_metadata,
+                            const std::size_t width,
+                            const std::size_t height,
+                            const double resolution,
                             distmap::DistanceFieldGrid &map)
 {
-  const std::size_t width  = static_cast<std::size_t>(map_metadata.width),
-                    height = static_cast<std::size_t>(map_metadata.height);
   map.resize(width, height);
-  map.setOrigin(distmap::DistanceFieldGrid::Origin(map_metadata.origin.position.x,
-                                                   map_metadata.origin.position.y,
-                                                   0));
-  map.setResolution(map_metadata.resolution);
+  map.setResolution(resolution);
 
   unsigned int i;
   for (unsigned int rows = 0; rows < height; ++rows) {
@@ -73,6 +70,17 @@ void matToDistanceFieldGrid(const cv::Mat& cv_map,
       map.data()[i] = static_cast<double>(cv_map.at<float>(rows, cols));
     }
   }
+}
+
+void matToDistanceFieldGrid(const cv::Mat& cv_map,
+                            const nav_msgs::MapMetaData& map_metadata,
+                            distmap::DistanceFieldGrid &map)
+{
+  matToDistanceFieldGrid(cv_map,
+                         static_cast<std::size_t>(map_metadata.width),
+                         static_cast<std::size_t>(map_metadata.height),
+                         map_metadata.resolution,
+                         map);
 }
 
 bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_grid)
@@ -151,17 +159,11 @@ bool DistanceMapOpencv::processImpl(const costmap_2d::Costmap2D* cost_map)
   */
 
   // convert opencv to distance_map_msgs
-  const double resolution = cost_map->getResolution();
-  const double resolution_offset = 0;
-//  const double resolution_offset = resolution / 2;
-  nav_msgs::MapMetaData map_metadata;
-  map_metadata.width  = cost_map->getSizeInCellsX();
-  map_metadata.height = cost_map->getSizeInCellsY();
-  map_metadata.resolution = resolution;
-  map_metadata.origin.position.x = cost_map->getOriginX() - resolution_offset;
-  map_metadata.origin.position.y = cost_map->getOriginY() - resolution_offset;
   matToDistanceFieldGrid(distance_field_obstacle_image_,
-                         map_metadata, *field_obstacles_);
+                         cost_map->getSizeInCellsX(),
+                         cost_map->getSizeInCellsY(),
+                         cost_map->getResolution(),
+                         *field_obstacles_);
 
   return true;
 }
