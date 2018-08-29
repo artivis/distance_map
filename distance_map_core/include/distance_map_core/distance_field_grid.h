@@ -42,7 +42,7 @@ public:
 
   ~DistanceFieldGrid();
 
-  void resize(const std::size_t row, const std::size_t col);
+  void resize(const std::size_t rows, const std::size_t cols);
 
   bool isCellValid(const std::size_t row, const std::size_t col) const noexcept;
   bool isPositionValid(const double x, const double y) const noexcept;
@@ -187,13 +187,16 @@ DistanceFieldGrid::~DistanceFieldGrid()
     delete data_;
 }
 
-void DistanceFieldGrid::resize(const std::size_t row, const std::size_t col)
-{
-  if (initialized_)
-    delete data_;
+void DistanceFieldGrid::resize(const std::size_t rows, const std::size_t cols)
+{  
+  if (rows*cols != dimension_.height*dimension_.width)
+  {
+    if (initialized_)
+      delete data_;
 
-  dimension_ = Dimension(row, col);
-  data_ = new double[dimension_.width*dimension_.height];
+    data_ = new double[rows*cols];
+  }
+  dimension_ = Dimension(cols, rows);
   initialized_ = true;
 }
 
@@ -217,28 +220,47 @@ void DistanceFieldGrid::cellToPosition(const std::size_t row,
   /* Sim2 * p */
   const double cos_yaw = std::cos(origin_.yaw) * resolution_;
   const double sin_yaw = std::sin(origin_.yaw) * resolution_;
-  x = cos_yaw*row - sin_yaw*col + origin_.x;
-  y = sin_yaw*row + cos_yaw*col + origin_.y;
+  y = cos_yaw*row - sin_yaw*col + origin_.x;
+  x = sin_yaw*row + cos_yaw*col + origin_.y;
+
+//  x = row * resolution_ + origin_.x;
+//  y = col * resolution_ + origin_.y;
 }
 
 void DistanceFieldGrid::positionToCell(const double x, const double y,
                                        std::size_t& row, std::size_t& col) const
 {
   /* Sim2^-1 * p */
+  // R^-1
   double cos_yaw = std::cos(origin_.yaw) * resolution_;
   double sin_yaw = std::sin(origin_.yaw) * resolution_;
   const double sq = cos_yaw*cos_yaw + sin_yaw*sin_yaw;
-
   cos_yaw =  cos_yaw / sq;
   sin_yaw = -sin_yaw / sq;
+
+  // t^-1
   const double xo = -(cos_yaw * origin_.x - sin_yaw * origin_.y);
   const double yo = -(sin_yaw * origin_.x + cos_yaw * origin_.y);
 
+//  constexpr double eps = 1e-8;
+//  col = static_cast<std::size_t>((cos_yaw * x - sin_yaw * y) + xo + eps);
+//  row = static_cast<std::size_t>((sin_yaw * x + cos_yaw * y) + yo + eps);
+
+  const double x_corner = ((cos_yaw * x - sin_yaw * y) + xo );
+  const double y_corner = ((sin_yaw * x + cos_yaw * y) + yo );
+
   /// @note Forces 0.5 to round up
   constexpr double eps = 1e-8;
+  row = static_cast<std::size_t>(
+          (std::cos(M_PI_2) * x_corner - std::sin(M_PI_2) * y_corner) + dimension_.height + eps);
+  col = static_cast<std::size_t>(std::sin(M_PI_2) * x_corner + std::cos(M_PI_2) * y_corner + eps);
 
-  row = static_cast<std::size_t>((cos_yaw * x - sin_yaw * y) + xo + eps);
-  col = static_cast<std::size_t>((sin_yaw * x + cos_yaw * y) + yo + eps);
+//  std::cout << "position: " << x << "," << y
+//            << "(" << x_corner << "," << y_corner << ")"
+//            << " to cell:"
+//            << row << "(<" << dimension_.height << ")"
+//            << ","
+//            << col << "(<" << dimension_.width << ")" << "\n";
 }
 
 double DistanceFieldGrid::atCell(const std::size_t row, const std::size_t col) const
@@ -250,7 +272,7 @@ double DistanceFieldGrid::atCell(const std::size_t row, const std::size_t col) c
 double DistanceFieldGrid::atCellSafe(const std::size_t row, const std::size_t col) const
 {
   /// @todo return -dist_to_in_bound ?
-  return isCellValid(row,col)? data_[getIndex(row, col)] : 0;
+  return isCellValid(row,col)? data_[getIndex(row,col)] : 0;
 }
 
 double DistanceFieldGrid::atPosition(const double x, const double y) const
@@ -332,7 +354,7 @@ double DistanceFieldGrid::atPositionSafe(const double x, const double y) const
 {
   /// @todo return -dist_to_in_bound ?
   double d = 0;
-  if (isPositionValid(x,y)/* && isPositionValid(x+1,y+1)*/)
+  if (isPositionValid(x,y))
   {
     d = atPosition(x,y);
   }
@@ -387,15 +409,7 @@ DistanceFieldGrid::gradientAtCellSafe(std::size_t row, std::size_t col) const
   Gradient grad;
   if (isCellValid(row,col))
   {
-    // handle borders
-    row = std::max(row, std::size_t(1));
-    col = std::max(col, std::size_t(1));
-
-    row = std::min(row, dimension_.height-2);
-    col = std::min(col, dimension_.width -2);
-
-    grad.dx = (atCell(row, col-1) - atCell(row, col+1)) / 2.;
-    grad.dy = (atCell(row-1, col) - atCell(row+1, col)) / 2.;
+    grad = gradientAtCell(row, col);
   }
   else
   {
@@ -468,7 +482,6 @@ DistanceFieldGrid::getOrigin() const noexcept
 
 std::size_t DistanceFieldGrid::getIndex(const std::size_t row, const std::size_t col) const
 {
-  //return col + (dimension_.height - row - 1) * dimension_.width;
   return row * dimension_.width + col;
 }
 

@@ -17,6 +17,15 @@ public:
   bool processImpl(const nav_msgs::OccupancyGridConstPtr occ_grid) override;
   bool processImpl(const costmap_2d::Costmap2D* cost_map) override;
 
+  static cv::Mat occupancyGridToMat(const nav_msgs::OccupancyGrid& map);
+  static cv::Mat costMapToMat(const costmap_2d::Costmap2D& costmap);
+  static void matToDistanceFieldGrid(const cv::Mat& cv_map,
+                                     const double resolution,
+                                     distmap::DistanceFieldGrid &map);
+  static void matToDistanceFieldGrid(const cv::Mat& cv_map,
+                                     const nav_msgs::MapMetaData& map_metadata,
+                                     distmap::DistanceFieldGrid &map);
+
 protected:
 
   cv::Mat image_,

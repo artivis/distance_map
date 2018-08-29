@@ -19,10 +19,6 @@ public:
 
   virtual bool process(const nav_msgs::OccupancyGridConstPtr occ_grid);
   virtual bool process(const costmap_2d::Costmap2D* cost_map);
-  //virtual bool convert(const nav_msgs::OccupancyGridConstPtr occ_grid);
-
-  //double cost(const double x, const double y);
-  //double cost(const double x, const double y, const double yaw);
 
   void setType(const std::string& type);
 
@@ -32,7 +28,12 @@ public:
 
   DistanceFieldGridPtr getDistanceFieldUnknown();
 
+  void setUnknowObstacles(bool unknow_is_obstacle);
+  bool getUnknowObstacles() const noexcept;
+
 protected:
+
+  bool unknow_is_obstacle_ = false;
 
   std::string type_;
 
@@ -98,6 +99,16 @@ inline DistanceFieldGridPtr
 DistanceMapBase::getDistanceFieldUnknown()
 {
   return field_unknowns_;
+}
+
+void DistanceMapBase::setUnknowObstacles(bool unknow_is_obstacle)
+{
+  unknow_is_obstacle_ = unknow_is_obstacle;
+}
+
+bool DistanceMapBase::getUnknowObstacles() const noexcept
+{
+  return unknow_is_obstacle_;
 }
 
 } /* namespace distmap */

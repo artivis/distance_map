@@ -8,28 +8,35 @@
 
 namespace distmap {
 
-cv::Mat occupancyGridToMat(const nav_msgs::OccupancyGrid& map)
+cv::Mat DistanceMapOpencv::occupancyGridToMat(const nav_msgs::OccupancyGrid& map)
 {
-  cv::Mat cv_map(map.info.height, map.info.width, CV_8UC1);
+//  std::cout << "BB : " << (int)map.info.width << "," << (int)map.info.height << "\n";
+//  cv::Mat cv_map = cv::Mat::zeros((int)map.info.width, (int)map.info.height, CV_8UC1);
+
+  cv::Mat cv_map((int)map.info.height, (int)map.info.width, CV_8UC1);
   unsigned int i;
-  // Make a double loop over indexes and assign values
-  for (unsigned int rows = 0; rows < map.info.height; ++rows) {
-    for (unsigned int cols = 0; cols < map.info.width; ++cols) {
-      i = cols + (map.info.height - rows - 1) * map.info.width;
+
+  for (unsigned int row = 0; row < map.info.height; ++row) {
+    for (unsigned int col = 0; col < map.info.width; ++col) {
+//      i = col + (map.info.height - row - 1) * map.info.width;
+      i = row * map.info.width + col;
       if (map.data[i] == 0) { //occ [0,0.1)
-        cv_map.at<uchar>(rows, cols) = 254;
+        cv_map.at<uchar>(row, col) = 254;
       } else if (map.data[i] == +100) { //occ (0.65,1]
-        cv_map.at<uchar>(rows, cols) = 0;
+        cv_map.at<uchar>(row, col) = 0;
       } else { //occ [0.1,0.65]
-        cv_map.at<uchar>(rows, cols) = 127; //205?
+        cv_map.at<uchar>(row, col) = 127; //205?
       }
     }
   }
 
+//  cv::rotate(cv_map, cv_map, cv::ROTATE_90_COUNTERCLOCKWISE/*_CLOCKWISE*/);
+
+  std::cout << "mat0 : " << cv_map.rows << "," << cv_map.cols << "\n";
   return cv_map;
 }
 
-cv::Mat costMapToMat(const costmap_2d::Costmap2D& costmap)
+cv::Mat DistanceMapOpencv::costMapToMat(const costmap_2d::Costmap2D& costmap)
 {
   const unsigned int X = costmap.getSizeInCellsX(),
                      Y = costmap.getSizeInCellsY();
@@ -54,31 +61,42 @@ cv::Mat costMapToMat(const costmap_2d::Costmap2D& costmap)
   return cv_map;
 }
 
-void matToDistanceFieldGrid(const cv::Mat& cv_map,
-                            const std::size_t width,
-                            const std::size_t height,
-                            const double resolution,
-                            distmap::DistanceFieldGrid &map)
+void DistanceMapOpencv::matToDistanceFieldGrid(const cv::Mat& cv_map,
+                                               const double resolution,
+                                               distmap::DistanceFieldGrid &map)
 {
-  map.resize(width, height);
+  map.resize(cv_map.rows, cv_map.cols);
   map.setResolution(resolution);
 
   unsigned int i;
-  for (unsigned int rows = 0; rows < height; ++rows) {
-    for (unsigned int cols = 0; cols < width; ++cols) {
-      i = cols + rows * width;
-      map.data()[i] = static_cast<double>(cv_map.at<float>(rows, cols));
+  for (int row = 0; row < cv_map.rows; ++row) {
+    for (int col = 0; col < cv_map.cols; ++col) {
+      i = (unsigned int)(row * cv_map.cols + col);
+      map.data()[i] = static_cast<double>(cv_map.at<float>(row, col));
     }
   }
+
+//  map.resize(cv_map.cols, cv_map.rows);
+//  map.setResolution(resolution);
+
+//  unsigned int i;
+//  for (unsigned int row = 0; row < cv_map.rows; ++row) {
+//    for (unsigned int col = 0; col < cv_map.cols; ++col) {
+//      i = col + (cv_map.rows - row - 1) * cv_map.cols;
+//      map.data()[i] = static_cast<double>(cv_map.at<float>(row, col));
+//    }
+//  }
+
+//  map.getDimension().height = 0;
+//  map.getDimension().height = 0;
+//  map.resize(cv_map.cols, cv_map.rows);
 }
 
-void matToDistanceFieldGrid(const cv::Mat& cv_map,
-                            const nav_msgs::MapMetaData& map_metadata,
-                            distmap::DistanceFieldGrid &map)
+void DistanceMapOpencv::matToDistanceFieldGrid(const cv::Mat& cv_map,
+                                               const nav_msgs::MapMetaData& map_metadata,
+                                               distmap::DistanceFieldGrid &map)
 {
   matToDistanceFieldGrid(cv_map,
-                         static_cast<std::size_t>(map_metadata.width),
-                         static_cast<std::size_t>(map_metadata.height),
                          map_metadata.resolution,
                          map);
 }
@@ -98,29 +116,27 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
   image_ = occupancyGridToMat(*occ_grid);
 
   // conversion into the binary image
-  cv::threshold(image_, binary_image_, 55, 255, cv::THRESH_BINARY);
+  double threshold = unknow_is_obstacle_? 128 : 126;
+  cv::threshold(image_, binary_image_, threshold, 255, cv::THRESH_BINARY);
 
   // computation of the distance transform on the binary image
   cv::distanceTransform(binary_image_, distance_field_obstacle_image_, CV_DIST_L2, 3);
 
-  /*
-  // Vizualization of the obstacles distance field grid
-  cv::Mat distance_image_norm_;
-  cv::normalize(distance_field_obstacle_image_, distance_image_norm_, 1, 0, cv::NORM_MINMAX);
-  cv::imshow("original", binary_image_);
-  cv::imshow("distances", distance_image_norm_);
+//  // Vizualization of the obstacles distance field grid
+//  cv::Mat distance_image_norm_;
+//  cv::normalize(distance_field_obstacle_image_, distance_image_norm_, 1, 0, cv::NORM_MINMAX);
+//  cv::imshow("original", binary_image_);
+//  cv::imshow("distances", distance_image_norm_);
 
-  static const double sec = 1000;
-  const double wait = 30 * sec;
+//  static const double sec = 1000;
+//  const double wait = 30 * sec;
 
-  cv::waitKey(wait);
-  cv::destroyAllWindows();
-  */
+//  cv::waitKey(wait);
+//  cv::destroyAllWindows();
 
   // convert opencv to distance_map_msgs
   matToDistanceFieldGrid(distance_field_obstacle_image_,
-                         occ_grid->info, *field_obstacles_);
-
+                         occ_grid->info/*.resolution*/, *field_obstacles_);
   return true;
 }
 
@@ -160,8 +176,6 @@ bool DistanceMapOpencv::processImpl(const costmap_2d::Costmap2D* cost_map)
 
   // convert opencv to distance_map_msgs
   matToDistanceFieldGrid(distance_field_obstacle_image_,
-                         cost_map->getSizeInCellsX(),
-                         cost_map->getSizeInCellsY(),
                          cost_map->getResolution(),
                          *field_obstacles_);
 

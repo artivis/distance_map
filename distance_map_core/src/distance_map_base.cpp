@@ -49,7 +49,7 @@ bool DistanceMapBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
                          occ_grid->info.resolution,
                          DistanceFieldGrid::Origin(occ_grid->info.origin.position.x,
                                                    occ_grid->info.origin.position.y,
-                                                   0));
+                                                   tf2::getYaw(occ_grid->info.origin.orientation)));
   }
   else if (field_unknowns_->getOrigin().x != occ_grid->info.origin.position.x or
            field_unknowns_->getOrigin().y != occ_grid->info.origin.position.y)
@@ -57,7 +57,7 @@ bool DistanceMapBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
     field_unknowns_->setOrigin(
           DistanceFieldGrid::Origin(occ_grid->info.origin.position.x,
                                     occ_grid->info.origin.position.y,
-                                    0));
+                                    tf2::getYaw(occ_grid->info.origin.orientation)));
   }
 
   preProcess(occ_grid);

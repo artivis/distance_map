@@ -74,7 +74,6 @@ endforeach(dir)
 ##    Test    ##
 ################
 
-#if(CATKIN_ENABLE_TESTING)
-#    find_package(rostest REQUIRED)
-#    find_package(catkin REQUIRED COMPONENTS roslib)
-#endif()
+if(CATKIN_ENABLE_TESTING)
+  add_subdirectory(test)
+endif()
