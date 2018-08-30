@@ -34,6 +34,13 @@ public:
   struct Gradient
   {
     double dx, dy;
+
+    Gradient operator*(double w)
+    {
+      Gradient g = *this;
+      g.dx *= w; g.dy *= w;
+      return g;
+    }
   };
 
   DistanceFieldGrid(const Dimension& dimension,
@@ -75,7 +82,8 @@ public:
    * @param y
    * @return The distance to the closest black (0) cell, in m unit.
    */
-  double atPosition(const double x, const double y) const;
+  double atPosition(const double x, const double y,
+                    const bool interpolate = false) const;
 
   /**
    * @brief atPositionSafe, if position is out of bound, return 0 (obstacle).
@@ -83,7 +91,8 @@ public:
    * @param y
    * @return The distance to the closest black (0) cell, in m unit.
    */
-  double atPositionSafe(const double x, const double y) const;
+  double atPositionSafe(const double x, const double y,
+                        const bool interpolate = false) const;
 
   /**
    * @brief gradientAtCell
@@ -99,7 +108,8 @@ public:
    * @param y
    * @return
    */
-  Gradient gradientAtPosition(const double x, const double y) const;
+  Gradient gradientAtPosition(const double x, const double y,
+                              const bool interpolate = false) const;
 
   /**
    * @brief gradientAtCellSafe
@@ -115,7 +125,8 @@ public:
    * @param y
    * @return
    */
-  Gradient gradientAtPositionSafe(const double x, const double y) const;
+  Gradient gradientAtPositionSafe(const double x, const double y,
+                                  const bool interpolate = false) const;
 
   // Setter/getter
 
@@ -277,88 +288,73 @@ double DistanceFieldGrid::atCellSafe(const std::size_t row, const std::size_t co
   return isCellValid(row,col)? data_[getIndex(row,col)] : 0;
 }
 
-double DistanceFieldGrid::atPosition(const double x, const double y) const
+double DistanceFieldGrid::atPosition(const double x, const double y,
+                                     const bool interpolate) const
 {
   assertIsValidPosition(x,y);
 
   std::size_t row, col;
   positionToCell(x,y,row,col);
 
-  return atCell(row,col) * resolution_;
+//  if (!interpolate)
+//    return atCell(row,col) * resolution_;
 
-//  const double lx = std::floor(x),
-//               ly = std::floor(y);
+  // bilinear interpolation
 
-//  const double hx = lx + resolution_,
-//               hy = ly + resolution_;
+  std::size_t lxi, lyi;
+  positionToCell(x,y,lyi,lxi);
+  std::size_t hxi=lxi+1, hyi=lyi+1;
 
-//  std::size_t lxi,lyi,hxi,hyi;
-//  positionToCell(lx,ly,lxi,lyi);
+  double lx, ly;
+  cellToPosition(lyi,lxi,lx,ly);
 
-//  isPositionValid(hx, hy)?
-//    positionToCell(hx,hy,hxi,hyi)    :
-//    positionToCell(hx-resolution_,
-//                   hy-resolution_,
-//                   hxi,hyi);
+  double hx, hy;
+  cellToPosition(hyi,hxi,hx,hy);
 
-//  std::cout << x << "," << y << "\n";
-//  std::cout << lxi << "," << lyi << "\n";
-//  std::cout << hxi << "," << hyi << "\n";
-//  std::cout << (hx-x)*(hy-y) << "," << (x-lx)*(hy-y) << ","
-//            << (hx-x)*(y-ly) << "," << (x-lx)*(y-ly) << "\n";
-//  std::cout << "Q1 " << (hx+1-x)*(hy+1-y)*atCell(lxi, lyi) << "\n";
-//  std::cout << "Q2 " << (x-lx)*(hy+1-y)*atCell(hxi, lyi) << "\n";
-//  std::cout << "Q3 " << (hx+1-x)*(y-ly)*atCell(lxi, hyi) << "\n";
-//  std::cout << "Q4 " << (x-lx)*(y-ly)*atCell(hxi, hyi) << "\n";
+  if ((hx==lx && hy==ly) || !isPositionValid(hx, hy))
+    return atCell(row,col) * resolution_;
 
-//  return (hx+1-x)*(hy+1-y)*atCell(lxi, lyi) +
-//         (x-lx)*(hy+1-y)*atCell(hxi, lyi) +
-//         (hx+1-x)*(y-ly)*atCell(lxi, hyi) +
-//         (x-lx)*(y-ly)*atCell(hxi, hyi) ;
+  const double w = 1./ (hx-lx)*(hy-ly);
 
-//  const double lx = std::floor(x),
-//               ly = std::floor(y);
+  const double a=(hx-x)*w;
+  const double b=(x-lx)*w;
 
-//  const double hx = lx + 1,
-//               hy = ly + 1;
+  const double q11=atCell(lyi,lxi);
+  const double q12=atCell(lyi,hxi);
+  const double q21=atCell(hyi,lxi);
+  const double q22=atCell(hyi,hxi);
 
-//  std::size_t lxi,lyi,hxi,hyi;
-//  positionToCell(lx,ly,lxi,lyi);
+  const double g=q11*a+q21*b;
+  const double h=q12*a+q22*b;
 
-//  if (isCellValid(lxi+1,lyi+1))
-//  {
-//    hxi = lxi+1;
-//    hyi = lyi+1;
-//  }
-//  else
-//  {
-//    hxi = lxi;
-//    hyi = lyi;
-//  }
+  const double d=(g*(hy-y)+h*(y-ly))/resolution_;
 
-//  std::cout << x << "," << y << "\n";
-//  std::cout << lxi << "," << lyi << "\n";
-//  std::cout << hxi << "," << hyi << "\n";
-//  std::cout << (hx-x)*(hy-y) << "," << (x-lx)*(hy-y) << ","
-//            << (hx-x)*(y-ly) << "," << (x-lx)*(y-ly) << "\n";
-//  std::cout << "Q1 " << (hx-x)*(hy-y)*atCell(lxi, lyi) << "\n";
-//  std::cout << "Q2 " << (x-lx)*(hy-y)*atCell(hxi, lyi) << "\n";
-//  std::cout << "Q3 " << (hx-x)*(y-ly)*atCell(lxi, hyi) << "\n";
-//  std::cout << "Q4 " << (x-lx)*(y-ly)*atCell(hxi, hyi) << "\n";
+//  std::cout << "x,y " << x   << "," << y   << "\n";
+//  std::cout << "lx,ly "<< lx << "," << ly << "\n";
+//  std::cout << "hx,hy "<< hx << "," << hy << "\n";
+//  std::cout << "lxi,lyi "<< lxi << "," << lyi << "\n";
+//  std::cout << "hxi,hyi "<< hxi << "," << hyi << "\n";
+//  std::cout << "w " << w
+//            << " a " << a << " b " << b
+//            << " g " << g << " h " << h
+//            << "\n";
+//  std::cout << " Q11 " << q11 << " Q12 " << q12
+//            << " Q21 " << q21 << " Q22 " << q22 << "\n";
 
-//  return (hx-x)*(hy-y)*atCell(lxi, lyi) +
-//         (x-lx)*(hy-y)*atCell(hxi, lyi) +
-//         (hx-x)*(y-ly)*atCell(lxi, hyi) +
-//         (x-lx)*(y-ly)*atCell(hxi, hyi) ;
+//  std::cout << "original dist : " << atCell(row,col) * resolution_
+//            << " interp dist  : " << d << "\n";
+
+  return d;
 }
 
-double DistanceFieldGrid::atPositionSafe(const double x, const double y) const
+double DistanceFieldGrid::atPositionSafe(const double x, const double y,
+                                         const bool interpolate) const
 {
   /// @todo return -dist_to_in_bound ?
   double d = 0;
   if (isPositionValid(x,y))
   {
-    d = atPosition(x,y);
+    d = atPosition(x,y,interpolate);
   }
   return d;
 }
@@ -384,23 +380,58 @@ DistanceFieldGrid::gradientAtCell(std::size_t row, std::size_t col) const
 }
 
 DistanceFieldGrid::Gradient
-DistanceFieldGrid::gradientAtPosition(double x, double y) const
+DistanceFieldGrid::gradientAtPosition(double x, double y,
+                                      const bool interpolate) const
 {
-  assertIsValidPosition(x,y);
-  assertIsValidPosition(x+1,y+1);
+  std::size_t row, col;
+  positionToCell(x,y,row,col);
 
-  const double lx = std::floor(x),
-               ly = std::floor(y);
-  const double hx = lx + 1.0,
-               hy = ly + 1.0;
+//  if (!interpolate)
+//    return atCell(row,col) * resolution_;
+
+  // bilinear interpolation
+
+  std::size_t lxi, lyi;
+  positionToCell(x,y,lyi,lxi);
+  std::size_t hxi=lxi+1, hyi=lyi+1;
+
+  double lx, ly;
+  cellToPosition(lyi,lxi,lx,ly);
+
+  double hx, hy;
+  cellToPosition(hyi,hxi,hx,hy);
+
+  if ((hx==lx && hy==ly) || !isPositionValid(hx, hy))
+  {
+    return gradientAtCell(row,col) * resolution_;
+  }
 
   Gradient grad;
 
-  grad.dx = (hy-y) * (atPosition(hx, ly)-atPosition(lx, ly)) +
-            (y-ly) * (atPosition(hx, hy)-atPosition(lx, hy));
+  grad.dx = (hy-y) * (atPosition(hx, ly, interpolate)-atPosition(lx, ly, interpolate)) +
+            (y-ly) * (atPosition(hx, hy, interpolate)-atPosition(lx, hy, interpolate));
 
-  grad.dy = (hx-x) * (atPosition(lx, hy)-atPosition(lx, ly)) +
-            (x-lx) * (atPosition(hx, hy)-atPosition(hx, ly));
+  grad.dy = (hx-x) * (atPosition(lx, hy, interpolate)-atPosition(lx, ly, interpolate)) +
+            (x-lx) * (atPosition(hx, hy, interpolate)-atPosition(hx, ly, interpolate));
+
+
+  //////////////////////////////////////
+
+//  assertIsValidPosition(x,y);
+////  assertIsValidPosition(x+1,y+1);
+
+//  const double lx = std::floor(x),
+//               ly = std::floor(y);
+//  const double hx = lx + 1.0,
+//               hy = ly + 1.0;
+
+//  Gradient grad;
+
+//  grad.dx = (hy-y) * (atPosition(hx, ly)-atPosition(lx, ly)) +
+//            (y-ly) * (atPosition(hx, hy)-atPosition(lx, hy));
+
+//  grad.dy = (hx-x) * (atPosition(lx, hy)-atPosition(lx, ly)) +
+//            (x-lx) * (atPosition(hx, hy)-atPosition(hx, ly));
 
   return grad;
 }
@@ -423,20 +454,52 @@ DistanceFieldGrid::gradientAtCellSafe(std::size_t row, std::size_t col) const
 }
 
 DistanceFieldGrid::Gradient
-DistanceFieldGrid::gradientAtPositionSafe(const double x, const double y) const
+DistanceFieldGrid::gradientAtPositionSafe(const double x, const double y,
+                                          const bool interpolate) const
 {
-  const double lx = std::floor(x),
-               ly = std::floor(y);
-  const double hx = lx + 1.0,
-               hy = ly + 1.0;
+  std::size_t row, col;
+  positionToCell(x,y,row,col);
+
+//  if (!interpolate)
+//    return atCell(row,col) * resolution_;
+
+  // bilinear interpolation
+
+  std::size_t lxi, lyi;
+  positionToCell(x,y,lyi,lxi);
+  std::size_t hxi=lxi+1, hyi=lyi+1;
+
+  double lx, ly;
+  cellToPosition(lyi,lxi,lx,ly);
+
+  double hx, hy;
+  cellToPosition(hyi,hxi,hx,hy);
+
+  if ((hx==lx && hy==ly) || !isPositionValid(hx, hy))
+  {
+    return gradientAtCellSafe(row,col) * resolution_;
+  }
+
   Gradient grad;
 
-  grad.dx = (hy-y) * (atPositionSafe(hx, ly)-atPositionSafe(lx, ly)) +
-            (y-ly) * (atPositionSafe(hx, hy)-atPositionSafe(lx, hy));
-  grad.dy = (hx-x) * (atPositionSafe(lx, hy)-atPositionSafe(lx, ly)) +
-            (x-lx) * (atPositionSafe(hx, hy)-atPositionSafe(hx, ly));
+  grad.dx = (hy-y) * (atPositionSafe(hx, ly, interpolate)-atPositionSafe(lx, ly, interpolate)) +
+            (y-ly) * (atPositionSafe(hx, hy, interpolate)-atPositionSafe(lx, hy, interpolate));
 
-  return grad;
+  grad.dy = (hx-x) * (atPositionSafe(lx, hy, interpolate)-atPositionSafe(lx, ly, interpolate)) +
+            (x-lx) * (atPositionSafe(hx, hy, interpolate)-atPositionSafe(hx, ly, interpolate));
+
+//  const double lx = std::floor(x),
+//               ly = std::floor(y);
+//  const double hx = lx + 1.0,
+//               hy = ly + 1.0;
+//  Gradient grad;
+
+//  grad.dx = (hy-y) * (atPositionSafe(hx, ly)-atPositionSafe(lx, ly)) +
+//            (y-ly) * (atPositionSafe(hx, hy)-atPositionSafe(lx, hy));
+//  grad.dy = (hx-x) * (atPositionSafe(lx, hy)-atPositionSafe(lx, ly)) +
+//            (x-lx) * (atPositionSafe(hx, hy)-atPositionSafe(hx, ly));
+
+//  return grad;
 }
 
 // Setter/getter
