@@ -217,14 +217,20 @@ void DistanceFieldGrid::cellToPosition(const std::size_t row,
                                        const std::size_t col,
                                        double& x, double& y) const
 {
-  /* Sim2 * p */
-  const double cos_yaw = std::cos(origin_.yaw) * resolution_;
-  const double sin_yaw = std::sin(origin_.yaw) * resolution_;
-  y = cos_yaw*row - sin_yaw*col + origin_.x;
-  x = sin_yaw*row + cos_yaw*col + origin_.y;
+  /// To cartesian coor
+  const double x_corner =  col;
+  const double y_corner = -row + (dimension_.height-1);
 
-//  x = row * resolution_ + origin_.x;
-//  y = col * resolution_ + origin_.y;
+  /* Sim2 * p */
+  const double cos_yaw  = std::cos(origin_.yaw) * resolution_;
+  const double sin_yaw  = std::sin(origin_.yaw) * resolution_;
+  x = cos_yaw * x_corner - sin_yaw * y_corner + origin_.x;
+  y = sin_yaw * x_corner + cos_yaw * y_corner + origin_.y;
+
+//  std::cout << "cell: " << row << "," << col
+//            << " (" << x_corner << "," << y_corner << ")"
+//            << " to position:"
+//            << x << "," << y << "\n";
 }
 
 void DistanceFieldGrid::positionToCell(const double x, const double y,
@@ -242,18 +248,14 @@ void DistanceFieldGrid::positionToCell(const double x, const double y,
   const double xo = -(cos_yaw * origin_.x - sin_yaw * origin_.y);
   const double yo = -(sin_yaw * origin_.x + cos_yaw * origin_.y);
 
-//  constexpr double eps = 1e-8;
-//  col = static_cast<std::size_t>((cos_yaw * x - sin_yaw * y) + xo + eps);
-//  row = static_cast<std::size_t>((sin_yaw * x + cos_yaw * y) + yo + eps);
+  const double x_corner = ((cos_yaw * x - sin_yaw * y) + xo);
+  const double y_corner = ((sin_yaw * x + cos_yaw * y) + yo);
 
-  const double x_corner = ((cos_yaw * x - sin_yaw * y) + xo );
-  const double y_corner = ((sin_yaw * x + cos_yaw * y) + yo );
-
+  /// Convert to grid index
   /// @note Forces 0.5 to round up
   constexpr double eps = 1e-8;
-  row = static_cast<std::size_t>(
-          (std::cos(M_PI_2) * x_corner - std::sin(M_PI_2) * y_corner) + dimension_.height + eps);
-  col = static_cast<std::size_t>(std::sin(M_PI_2) * x_corner + std::cos(M_PI_2) * y_corner + eps);
+  row = static_cast<std::size_t>(-y_corner + (dimension_.height-1) + eps);
+  col = static_cast<std::size_t>( x_corner + eps);
 
 //  std::cout << "position: " << x << "," << y
 //            << "(" << x_corner << "," << y_corner << ")"
