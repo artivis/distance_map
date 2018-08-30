@@ -10,15 +10,11 @@ namespace distmap {
 
 cv::Mat DistanceMapOpencv::occupancyGridToMat(const nav_msgs::OccupancyGrid& map)
 {
-//  std::cout << "BB : " << (int)map.info.width << "," << (int)map.info.height << "\n";
-//  cv::Mat cv_map = cv::Mat::zeros((int)map.info.width, (int)map.info.height, CV_8UC1);
-
   cv::Mat cv_map((int)map.info.height, (int)map.info.width, CV_8UC1);
   unsigned int i;
 
   for (unsigned int row = 0; row < map.info.height; ++row) {
     for (unsigned int col = 0; col < map.info.width; ++col) {
-//      i = col + (map.info.height - row - 1) * map.info.width;
       i = row * map.info.width + col;
       if (map.data[i] == 0) { //occ [0,0.1)
         cv_map.at<uchar>(row, col) = 254;
@@ -30,9 +26,6 @@ cv::Mat DistanceMapOpencv::occupancyGridToMat(const nav_msgs::OccupancyGrid& map
     }
   }
 
-//  cv::rotate(cv_map, cv_map, cv::ROTATE_90_COUNTERCLOCKWISE/*_CLOCKWISE*/);
-
-  std::cout << "mat0 : " << cv_map.rows << "," << cv_map.cols << "\n";
   return cv_map;
 }
 
@@ -44,16 +37,17 @@ cv::Mat DistanceMapOpencv::costMapToMat(const costmap_2d::Costmap2D& costmap)
   unsigned int i;
   // Make a double loop over indexes and assign values
   unsigned char const* data = costmap.getCharMap();
-  for (unsigned int rows = 0; rows < Y; ++rows) {
-    for (unsigned int cols = 0; cols < X; ++cols) {
-      i = cols + (Y - rows - 1) * X;
+  for (unsigned int row = 0; row < Y; ++row) {
+    for (unsigned int col = 0; col < X; ++col) {
+      i = col + (Y - row - 1) * X;
+//      i = row * X + col;
       if (data[i] == costmap_2d::INSCRIBED_INFLATED_OBSTACLE or
           data[i] == costmap_2d::LETHAL_OBSTACLE) { // Obstacle
-        cv_map.at<uchar>(rows, cols) = 0;
+        cv_map.at<uchar>(row, col) = 0;
       } else if (data[i] == costmap_2d::NO_INFORMATION) { // UNKNOWN
-        cv_map.at<uchar>(rows, cols) = 127;
+        cv_map.at<uchar>(row, col) = 127;
       } else { // FREE_SPACE
-        cv_map.at<uchar>(rows, cols) = 254;
+        cv_map.at<uchar>(row, col) = 254;
       }
     }
   }
@@ -75,21 +69,6 @@ void DistanceMapOpencv::matToDistanceFieldGrid(const cv::Mat& cv_map,
       map.data()[i] = static_cast<double>(cv_map.at<float>(row, col));
     }
   }
-
-//  map.resize(cv_map.cols, cv_map.rows);
-//  map.setResolution(resolution);
-
-//  unsigned int i;
-//  for (unsigned int row = 0; row < cv_map.rows; ++row) {
-//    for (unsigned int col = 0; col < cv_map.cols; ++col) {
-//      i = col + (cv_map.rows - row - 1) * cv_map.cols;
-//      map.data()[i] = static_cast<double>(cv_map.at<float>(row, col));
-//    }
-//  }
-
-//  map.getDimension().height = 0;
-//  map.getDimension().height = 0;
-//  map.resize(cv_map.cols, cv_map.rows);
 }
 
 void DistanceMapOpencv::matToDistanceFieldGrid(const cv::Mat& cv_map,
@@ -136,7 +115,7 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
 
   // convert opencv to distance_map_msgs
   matToDistanceFieldGrid(distance_field_obstacle_image_,
-                         occ_grid->info/*.resolution*/, *field_obstacles_);
+                         occ_grid->info.resolution, *field_obstacles_);
   return true;
 }
 
@@ -155,7 +134,8 @@ bool DistanceMapOpencv::processImpl(const costmap_2d::Costmap2D* cost_map)
   image_ = costMapToMat(*cost_map);
 
   // conversion into the binary image
-  cv::threshold(image_, binary_image_, 55, 255, cv::THRESH_BINARY);
+  double threshold = unknow_is_obstacle_? 128 : 126;
+  cv::threshold(image_, binary_image_, threshold, 255, cv::THRESH_BINARY);
 
   // computation of the distance transform on the binary image
   cv::distanceTransform(binary_image_, distance_field_obstacle_image_, CV_DIST_L2, 3);
