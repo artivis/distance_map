@@ -460,20 +460,25 @@ DistanceFieldGrid::gradientAtPositionSafe(const double x, const double y,
   std::size_t row, col;
   positionToCell(x,y,row,col);
 
-//  if (!interpolate)
-//    return atCell(row,col) * resolution_;
+  if (!interpolate)
+    return gradientAtCellSafe(row,col) * resolution_;
 
   // bilinear interpolation
 
-  std::size_t lxi, lyi;
-  positionToCell(x,y,lyi,lxi);
-  std::size_t hxi=lxi+1, hyi=lyi+1;
+//  std::size_t lxi, lyi;
+//  positionToCell(x,y,lyi,lxi);
+//  std::size_t hxi=lxi+1, hyi=lyi+1;
 
-  double lx, ly;
-  cellToPosition(lyi,lxi,lx,ly);
+//  double lx, ly;
+//  cellToPosition(lyi,lxi,lx,ly);
 
-  double hx, hy;
-  cellToPosition(hyi,hxi,hx,hy);
+//  double hx, hy;
+//  cellToPosition(hyi,hxi,hx,hy);
+
+  const double lx = std::floor(x),
+               ly = std::floor(y);
+  const double hx = lx + resolution_ + 1e-8,
+               hy = ly + resolution_ + 1e-8;
 
   if ((hx==lx && hy==ly) || !isPositionValid(hx, hy))
   {
@@ -487,6 +492,8 @@ DistanceFieldGrid::gradientAtPositionSafe(const double x, const double y,
 
   grad.dy = (hx-x) * (atPositionSafe(lx, hy, interpolate)-atPositionSafe(lx, ly, interpolate)) +
             (x-lx) * (atPositionSafe(hx, hy, interpolate)-atPositionSafe(hx, ly, interpolate));
+
+  return grad;
 
 //  const double lx = std::floor(x),
 //               ly = std::floor(y);
