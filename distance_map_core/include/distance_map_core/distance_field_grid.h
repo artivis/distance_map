@@ -296,8 +296,8 @@ double DistanceFieldGrid::atPosition(const double x, const double y,
   std::size_t row, col;
   positionToCell(x,y,row,col);
 
-//  if (!interpolate)
-//    return atCell(row,col) * resolution_;
+  if (!interpolate)
+    return atCell(row,col) * resolution_;
 
   // bilinear interpolation
 
