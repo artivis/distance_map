@@ -75,5 +75,5 @@ endforeach(dir)
 ################
 
 if(CATKIN_ENABLE_TESTING)
-  add_subdirectory(test)
+#  add_subdirectory(test)
 endif()
