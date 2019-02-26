@@ -15,7 +15,8 @@ cv::Mat DistanceMapOpencv::occupancyGridToMat(const nav_msgs::OccupancyGrid& map
 
   for (unsigned int row = 0; row < map.info.height; ++row) {
     for (unsigned int col = 0; col < map.info.width; ++col) {
-      i = row * map.info.width + col;
+      //i = row * map.info.width + col;
+      i = col + (map.info.height - row - 1) * map.info.width;
       if (map.data[i] == 0) { //occ [0,0.1)
         cv_map.at<uchar>(row, col) = 254;
       } else if (map.data[i] == +100) { //occ (0.65,1]
