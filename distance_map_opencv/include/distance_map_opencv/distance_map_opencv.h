@@ -3,7 +3,7 @@
 
 #include <distance_map_core/distance_map_base.h>
 
-#include <opencv2/core/mat.hpp>
+#include <opencv2/opencv.hpp>
 
 namespace distmap {
 
@@ -28,11 +28,14 @@ public:
 
 protected:
 
+  int distance_type_ = cv::DIST_L2,
+      mask_size_     = cv::DIST_MASK_PRECISE;
+
   cv::Mat image_,
           binary_image_,
           distance_field_obstacle_image_;
 
-  //inline virtual bool configure() override { return true; };
+  bool configureImpl() override;
 };
 
 } /* namespace distmap */

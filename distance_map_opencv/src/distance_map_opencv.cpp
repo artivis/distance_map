@@ -4,8 +4,6 @@
 #include <ros/ros.h>
 #include <costmap_2d/cost_values.h>
 
-#include <opencv2/opencv.hpp>
-
 namespace distmap {
 
 cv::Mat DistanceMapOpencv::occupancyGridToMat(const nav_msgs::OccupancyGrid& map)
@@ -15,7 +13,6 @@ cv::Mat DistanceMapOpencv::occupancyGridToMat(const nav_msgs::OccupancyGrid& map
 
   for (unsigned int row = 0; row < map.info.height; ++row) {
     for (unsigned int col = 0; col < map.info.width; ++col) {
-      //i = row * map.info.width + col;
       i = col + (map.info.height - row - 1) * map.info.width;
       if (map.data[i] == 0) { //occ [0,0.1)
         cv_map.at<uchar>(row, col) = 254;
@@ -41,7 +38,6 @@ cv::Mat DistanceMapOpencv::costMapToMat(const costmap_2d::Costmap2D& costmap)
   for (unsigned int row = 0; row < Y; ++row) {
     for (unsigned int col = 0; col < X; ++col) {
       i = col + (Y - row - 1) * X;
-//      i = row * X + col;
       if (data[i] == costmap_2d::INSCRIBED_INFLATED_OBSTACLE or
           data[i] == costmap_2d::LETHAL_OBSTACLE) { // Obstacle
         cv_map.at<uchar>(row, col) = 0;
@@ -81,6 +77,39 @@ void DistanceMapOpencv::matToDistanceFieldGrid(const cv::Mat& cv_map,
                          map);
 }
 
+bool DistanceMapOpencv::configureImpl()
+{
+  ros::NodeHandle nh("~/DistanceMapOpencv");
+
+  nh.param("distance_type", distance_type_, distance_type_);
+
+  if (distance_type_ != cv::DIST_L1     ||
+      distance_type_ != cv::DIST_L2     ||
+      distance_type_ != cv::DIST_C      ||
+      distance_type_ != cv::DIST_L12    ||
+      distance_type_ != cv::DIST_FAIR   ||
+      distance_type_ != cv::DIST_WELSCH ||
+      distance_type_ != cv::DIST_HUBER    )
+  {
+    ROS_ERROR_STREAM("Unknown option " << distance_type_ <<
+                     " for distance_type. Setting default CV_DIST_L2.");
+    distance_type_ = CV_DIST_L2;
+  }
+
+  nh.param("mask_size", mask_size_, mask_size_);
+
+  if (mask_size_ != cv::DIST_MASK_PRECISE ||
+      mask_size_ != cv::DIST_MASK_3       ||
+      mask_size_ != cv::DIST_MASK_5         )
+  {
+    ROS_ERROR_STREAM("Unknown option " << mask_size_ <<
+                     " for mask_size. Setting default DIST_MASK_PRECISE.");
+    mask_size_ = cv::DIST_L2;
+  }
+
+  return true;
+}
+
 bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_grid)
 {
   assert(field_obstacles_ && "field_obstacles_ is nullptr !");
@@ -100,7 +129,8 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
   cv::threshold(image_, binary_image_, threshold, 255, cv::THRESH_BINARY);
 
   // computation of the distance transform on the binary image
-  cv::distanceTransform(binary_image_, distance_field_obstacle_image_, CV_DIST_L2, 3);
+  cv::distanceTransform(binary_image_, distance_field_obstacle_image_,
+                        distance_type_, mask_size_);
 
 //  // Vizualization of the obstacles distance field grid
 //  cv::Mat distance_image_norm_;
@@ -139,7 +169,8 @@ bool DistanceMapOpencv::processImpl(const costmap_2d::Costmap2D* cost_map)
   cv::threshold(image_, binary_image_, threshold, 255, cv::THRESH_BINARY);
 
   // computation of the distance transform on the binary image
-  cv::distanceTransform(binary_image_, distance_field_obstacle_image_, CV_DIST_L2, 3);
+  cv::distanceTransform(binary_image_, distance_field_obstacle_image_,
+                        distance_type_, mask_size_);
 
   /*
   // Vizualization of the obstacles distance field grid
