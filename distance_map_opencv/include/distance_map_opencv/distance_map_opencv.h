@@ -30,9 +30,7 @@ protected:
 
   cv::Mat image_,
           binary_image_,
-          binary_image_unknown_,
-          distance_field_obstacle_image_,
-          distance_field_unknown_image_;
+          distance_field_obstacle_image_;
 
   //inline virtual bool configure() override { return true; };
 };

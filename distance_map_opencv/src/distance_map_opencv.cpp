@@ -96,7 +96,7 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
   image_ = occupancyGridToMat(*occ_grid);
 
   // conversion into the binary image
-  double threshold = unknow_is_obstacle_? 128 : 126;
+  const double threshold = unknow_is_obstacle_? 128 : 126;
   cv::threshold(image_, binary_image_, threshold, 255, cv::THRESH_BINARY);
 
   // computation of the distance transform on the binary image
@@ -135,7 +135,7 @@ bool DistanceMapOpencv::processImpl(const costmap_2d::Costmap2D* cost_map)
   image_ = costMapToMat(*cost_map);
 
   // conversion into the binary image
-  double threshold = unknow_is_obstacle_? 128 : 126;
+  const double threshold = unknow_is_obstacle_? 128 : 126;
   cv::threshold(image_, binary_image_, threshold, 255, cv::THRESH_BINARY);
 
   // computation of the distance transform on the binary image
