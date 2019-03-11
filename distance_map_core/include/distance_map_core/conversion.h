@@ -28,6 +28,19 @@ distance_map_msgs::DistanceFieldGrid toMsg(const DistanceFieldGrid& map)
   return msg;
 }
 
+DistanceFieldGrid fromMsg(const distance_map_msgs::DistanceFieldGrid& msg)
+{
+  DistanceFieldGrid grid(DistanceFieldGrid::Dimension(msg.info.width, msg.info.height),
+                         msg.info.resolution,
+                         DistanceFieldGrid::Origin(msg.info.origin.position.x,
+                                                   msg.info.origin.position.y,
+                                                   tf::getYaw(msg.info.origin.orientation)));
+  std::copy(msg.data.data(),
+                 msg.data.data() + (msg.info.width * msg.info.height),
+                 grid.data());
+  return grid;
+}
+
 } /* namespace distmap */
 
 #endif /* _DISTANCE_MAP_CORE_CONVERSION_H_ */
