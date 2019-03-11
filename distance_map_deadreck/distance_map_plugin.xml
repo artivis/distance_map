@@ -1,0 +1,7 @@
+<library path="lib/libdistance_map_deadreck">
+  <class name="distmap/DistanceMapDeadReck" type="distmap::DistanceMapDeadReck" base_class_type="distmap::DistanceMapBase">
+   <description>
+   This is a rectangle plugin (Hello World !)
+   </description>
+  </class>
+</library>

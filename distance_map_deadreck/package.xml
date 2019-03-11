@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>distance_map_deadreck</name>
+  <version>0.0.0</version>
+  <description>
+    Node package of the map_distance project.
+    It contains the ROS node that instantiate the
+    distance map plugin.
+  </description>
+
+  <author email="jeremie.deray@pal-robotics.com">Jeremie Deray</author>
+  <maintainer email="jeremie.deray@pal-robotics.com">Jeremie Deray</maintainer>
+
+  <!-- this package license -->
+  <license>Apache-2.0</license>
+
+  <!-- Dead Reckonning license -->
+  <license>MIT</license>
+  <url type="website">https://github.com/arkanis/single-header-file-c-libs</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>distance_map_core</depend>
+
+<!--  <test_depend>roslib</test_depend>-->
+<!--  <test_depend>rostest</test_depend>-->
+
+  <export>
+    <distance_map_core plugin="${prefix}/distance_map_plugin.xml" />
+  </export>
+</package>
