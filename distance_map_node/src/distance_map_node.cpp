@@ -1,12 +1,33 @@
-#include "distance_map_node/distance_map_node.h"
-
-#include <distance_map_msgs/DistanceFieldGrid.h>
-
 #include <distance_map_core/distance_map_base.h>
 #include <distance_map_core/conversion.h>
 #include <distance_map_core/distance_map_instantiater.h>
 
+#include <ros/ros.h>
+
 namespace distmap {
+
+class DistanceMapNode {
+public:
+
+  DistanceMapNode() = default;
+  virtual ~DistanceMapNode() = default;
+
+  void initialize();
+
+  void process(const nav_msgs::OccupancyGridConstPtr occ_grid);
+
+protected:
+
+  bool configured_ = false; /*!< @brief Whether the node is configured. */
+
+  boost::shared_ptr<DistanceMapBase> dist_map_ptr_;
+
+  ros::NodeHandle private_nh_ = ros::NodeHandle("~");
+
+  ros::Subscriber map_sub_;
+
+  ros::Publisher field_obstacles_pub_, field_unknowns_pub_;
+};
 
 void DistanceMapNode::initialize()
 {
@@ -30,7 +51,7 @@ void DistanceMapNode::initialize()
   map_sub_ = private_nh_.subscribe("/map", 1, &DistanceMapNode::process, this);
 
   field_obstacles_pub_ = private_nh_.advertise<distance_map_msgs::DistanceFieldGrid>("distance_field_obstacles", 1, true);
-  field_unknowns_pub_  = private_nh_.advertise<distance_map_msgs::DistanceFieldGrid>("distance_field_unknowns",  1, true);
+//  field_unknowns_pub_  = private_nh_.advertise<distance_map_msgs::DistanceFieldGrid>("distance_field_unknowns",  1, true);
 
   ROS_INFO("Subscribed to %s", map_sub_.getTopic().c_str());
 }
@@ -51,13 +72,11 @@ void DistanceMapNode::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
 
   if (dist_map_ptr_->process(occ_grid))
   {
-//    publish();
+    auto dist_grid_ptr = dist_map_ptr_->getDistanceFieldObstacle();
 
-    auto distmap_ptr = dist_map_ptr_->getDistanceFieldObstacle();
+    assert(dist_grid_ptr != nullptr && "dist_grid_ptr == nullptr !");
 
-    assert(distmap_ptr != nullptr && "distmap_ptr == nullptr !");
-
-    auto field_msg = distmap::toMsg(*distmap_ptr);
+    auto field_msg = distmap::toMsg(*dist_grid_ptr);
 
     field_msg.header = occ_grid->header;
 
