@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>distance_map_tools</name>
+  <version>0.0.0</version>
+  <description>
+    Node package of the map_distance project.
+    It contains the ROS node that instantiate the
+    distance map plugin.
+  </description>
+
+  <author email="jeremie.deray@pal-robotics.com">Jeremie Deray</author>
+  <maintainer email="jeremie.deray@pal-robotics.com">Jeremie Deray</maintainer>
+
+  <license>Apache-2.0</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>backward_ros</depend>
+  <depend>distance_map_core</depend>
+  <depend>interactive_markers</depend>
+  <depend>visualization_msgs</depend>
+
+<!--  <test_depend>roslib</test_depend>-->
+<!--  <test_depend>rostest</test_depend>-->
+
+  <export>
+    <!-- -->
+  </export>
+</package>
