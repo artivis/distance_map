@@ -51,6 +51,12 @@ public:
                     const double resolution = 1,
                     const Origin& origin = Origin());
 
+  DistanceFieldGrid(const DistanceFieldGrid& grid);
+  DistanceFieldGrid(DistanceFieldGrid&& grid);
+
+  DistanceFieldGrid& operator=(const DistanceFieldGrid& grid);
+  DistanceFieldGrid& operator=(DistanceFieldGrid&& grid);
+
   ~DistanceFieldGrid();
 
   void resize(const std::size_t rows, const std::size_t cols);
@@ -194,6 +200,67 @@ DistanceFieldGrid::DistanceFieldGrid(const Dimension& dimension,
 
   data_ = new double[dimension_.width*dimension_.height];
   initialized_ = true;
+}
+
+DistanceFieldGrid::DistanceFieldGrid(const DistanceFieldGrid& grid)
+  : dimension_(grid.dimension_)
+{
+  *this = grid;
+}
+
+DistanceFieldGrid::DistanceFieldGrid(DistanceFieldGrid&& grid)
+  : dimension_(grid.dimension_)
+{
+  *this = grid;
+}
+
+DistanceFieldGrid& DistanceFieldGrid::operator=(const DistanceFieldGrid& grid)
+{
+  if (grid.initialized_)
+  {
+    resolution_ = grid.resolution_;
+    origin_     = grid.origin_;
+
+    if (dimension_.width  != grid.dimension_.width ||
+        dimension_.height != grid.dimension_.height  ) {
+      dimension_  = grid.dimension_;
+      data_ = new double[dimension_.width*dimension_.height];
+    }
+
+    std::copy(grid.data_, grid.data_+(dimension_.width*dimension_.height), data_);
+
+    initialized_ = grid.initialized_;
+  }
+
+  return *this;
+}
+
+DistanceFieldGrid& DistanceFieldGrid::operator=(DistanceFieldGrid&& grid)
+{
+  if (grid.initialized_)
+  {
+    resolution_ = grid.resolution_;
+    origin_     = grid.origin_;
+
+    if (dimension_.width  != grid.dimension_.width ||
+        dimension_.height != grid.dimension_.height  ) {
+      dimension_  = grid.dimension_;
+      data_ = new double[dimension_.width*dimension_.height];
+    }
+
+    std::copy(grid.data_, grid.data_+(dimension_.width*dimension_.height), data_);
+
+    grid.dimension_ = Dimension(1,1);
+    grid.resolution_ = 1;
+    grid.origin_ = Origin();
+    delete grid.data_;
+    grid.data_ = NULL;
+
+    initialized_ = grid.initialized_;
+    grid.initialized_ = false;
+  }
+
+  return *this;
 }
 
 DistanceFieldGrid::~DistanceFieldGrid()
