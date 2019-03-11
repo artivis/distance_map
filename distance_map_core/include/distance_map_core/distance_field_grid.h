@@ -11,6 +11,10 @@ class DistanceFieldGrid
 {
 public:
 
+  /// @todo Use Scalar to 'easily' switch
+  /// between floats & doubles
+  //using Scalar = float;
+
   struct Dimension
   {
     Dimension(const std::size_t width, const std::size_t height);
