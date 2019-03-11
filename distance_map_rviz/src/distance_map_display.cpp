@@ -179,6 +179,8 @@ void DmSwatch::updateAlpha(const Ogre::SceneBlendType sceneBlending, bool depthW
 
 void DmSwatch::updateData()
 {
+  using std::abs;
+
   unsigned int pixels_size = width_ * height_;
   unsigned char* pixels = new unsigned char[pixels_size];
   memset(pixels, 255, pixels_size);
@@ -190,7 +192,7 @@ void DmSwatch::updateData()
   for (unsigned int r=0; r<parent_->current_map_.info.height; ++r) {
     for (unsigned int c=0; c<parent_->current_map_.info.width; ++c) {
       i = c + (parent_->current_map_.info.height - r - 1) * parent_->current_map_.info.width;
-      unsigned char value = static_cast<unsigned char>(parent_->current_map_.data[ i ]);
+      unsigned char value = static_cast<unsigned char>(abs(parent_->current_map_.data[ i ]));
       *ptr = value;
       ++ptr;
     }
@@ -239,12 +241,12 @@ DistanceMapDisplay::DistanceMapDisplay()
                                           this, SLOT( updateTopic() ));
 
   alpha_property_ = new FloatProperty( "Alpha", 0.7,
-                                       "Amount of transparency to apply to the map.",
+                                       "Amount of transparency to apply to the grid.",
                                        this, SLOT( updateAlpha() ));
   alpha_property_->setMin( 0 );
   alpha_property_->setMax( 1 );
 
-  color_scheme_property_ = new EnumProperty( "Color Scheme", "map", "How to color the occupancy values.",
+  color_scheme_property_ = new EnumProperty( "Color Scheme", "raw", "How to color the occupancy values.",
                                              this, SLOT( updatePalette() ));
   // Option values here must correspond to indices in palette_textures_ array in onInitialize() below.
   color_scheme_property_->addOption( "map", 0 );
@@ -578,27 +580,20 @@ void DistanceMapDisplay::incomingMap(const distance_map_msgs::DistanceFieldGrid:
 
 void DistanceMapDisplay::normalizeDistances()
 {
-  float max_dist = -1;
+  using std::abs;
 
-  //ROS_ERROR_STREAM("current_map_.data.size() : " << current_map_.data.size());
+  float max_dist = -1;
 
   for (unsigned int i=0; i<current_map_.data.size(); ++i)
   {
-    if (max_dist < current_map_.data[i])
-      max_dist = current_map_.data[i];
+    if (max_dist < abs(current_map_.data[i]))
+      max_dist = abs(current_map_.data[i]);
   }
-
-  //ROS_ERROR_STREAM("max dist : " << max_dist);
 
   for (unsigned int i=0; i<current_map_.data.size(); ++i)
   {
     current_map_.data[i] /= max_dist;
     current_map_.data[i] *= 255.;
-
-    //std::cout << current_map_.data[i] << ",";
-
-    //if (current_map_.data[i] > 250)
-    //  ROS_ERROR("YEP");
   }
 }
 
