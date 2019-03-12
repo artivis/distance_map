@@ -33,7 +33,7 @@ public:
 
 protected:
 
-  bool unknow_is_obstacle_ = false;
+  bool unknow_is_obstacle_ = true;
 
   std::string type_;
 
