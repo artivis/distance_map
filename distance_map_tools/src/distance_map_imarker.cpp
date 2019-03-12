@@ -18,8 +18,6 @@ public:
 
 protected:
 
-  bool configured_ = false; /*!< @brief Whether the node is configured. */
-
   std::shared_ptr<DistanceFieldGrid> dist_grid_ptr_;
 
   ros::NodeHandle private_nh_ = ros::NodeHandle("~");
@@ -64,7 +62,8 @@ void DistanceMapImarker::initialize_markers()
   scale.x = 0.1;
   scale.y = 0.1;
   scale.z = 0.15;
-  color.r = 0; // Black
+  color.r = 0; // Green
+  color.g = 1;
 
   distance_marker_.header.frame_id = global_frame_;
   distance_marker_.ns       = "distance";
@@ -135,18 +134,20 @@ void DistanceMapImarker::initialize()
     if (dist_grid_ptr_ != nullptr)
     {
       const double d = dist_grid_ptr_->atPositionSafe(
-            feedback->pose.position.x, feedback->pose.position.y, false);
+            feedback->pose.position.x, feedback->pose.position.y, true);
 
       const auto g = dist_grid_ptr_->gradientAtPositionSafe(
-            feedback->pose.position.x, feedback->pose.position.y, false);
+            feedback->pose.position.x, feedback->pose.position.y, true);
 
       if (distance_map_markers_.markers.empty())
       {
         gradient_marker_.action = visualization_msgs::Marker::ADD;
         distance_map_markers_.markers.push_back(gradient_marker_);
+        gradient_marker_.action = visualization_msgs::Marker::MODIFY;
 
         distance_marker_.action = visualization_msgs::Marker::ADD;
         distance_map_markers_.markers.push_back(distance_marker_);
+        distance_marker_.action = visualization_msgs::Marker::MODIFY;
       }
 
       const double angle = std::atan2(g.dy, g.dx);
@@ -164,9 +165,12 @@ void DistanceMapImarker::initialize()
 
       markers_pub_.publish(distance_map_markers_);
 
+      const double gnorm = std::sqrt(g.dx*g.dx + g.dy*g.dy);
+
       ROS_INFO_STREAM("At position [" << feedback->pose.position.x << ","
                       << feedback->pose.position.y << "] distance is " << d
-                      << " gradient is [" << g.dx << "," << g.dy << "]");
+                      << " gradient is [" << g.dx << "," << g.dy << "]"
+                      << "(norm " << gnorm << ")");
     }
   };
 
@@ -191,11 +195,7 @@ void DistanceMapImarker::process(const distance_map_msgs::DistanceFieldGridConst
     initialize_markers();
   }
 
-  ROS_ERROR("FROM_MSG 0");
-
   *dist_grid_ptr_ = distmap::fromMsg(*dist_grid);
-
-  ROS_ERROR("FROM_MSG 1");
 }
 
 } /* namespace distmap */
