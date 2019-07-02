@@ -104,7 +104,7 @@ bool DistanceMapOpencv::configureImpl()
   {
     ROS_ERROR_STREAM("Unknown option " << mask_size_ <<
                      " for mask_size. Setting default DIST_MASK_PRECISE.");
-    mask_size_ = cv::DIST_L2;
+    mask_size_ = cv::DIST_MASK_PRECISE;
   }
 
   return true;
