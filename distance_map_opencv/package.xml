@@ -24,9 +24,6 @@
 
   <depend>OpenCV</depend>
 
-<!--  <test_depend>roslib</test_depend>-->
-<!--  <test_depend>rostest</test_depend>-->
-
   <export>
     <distance_map_core plugin="${prefix}/distance_map_plugin.xml" />
   </export>
