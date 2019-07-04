@@ -6,19 +6,18 @@
 #include "distance_map_core/singleton.h"
 #include "distance_map_core/distance_map_converter_base.h"
 
-namespace
-{
+namespace {
 
-class DistanceMapInstantiater final
+class DistanceMapConverterInstantiater final
 {
 public:
 
-  DistanceMapInstantiater()  = default;
-  ~DistanceMapInstantiater() = default;
+  DistanceMapConverterInstantiater()  = default;
+  ~DistanceMapConverterInstantiater() = default;
 
   // Not copyable
-  LaserOdometryInstanDistanceMapInstantiatertiater(DistanceMapInstantiater&) = delete;
-  void operator=(DistanceMapInstantiater&)                                   = delete;
+  LaserOdometryInstanDistanceMapInstantiatertiater(DistanceMapConverterInstantiater&) = delete;
+  void operator=(DistanceMapConverterInstantiater&)                                   = delete;
 
   distmap::DistanceMapPtr instantiate_impl(const std::string& distance_map_type)
   {
@@ -63,19 +62,19 @@ protected:
     {"distance_map_core","distmap::DistanceMapConverterBase"};
 };
 
-} /* namespace */
+} // namespace
 
 namespace distmap {
 
 namespace detail {
-using Instantiater = details::Singleton<DistanceMapInstantiater>;
-} /* namespace detail */
+using Instantiater = details::Singleton<DistanceMapConverterInstantiater>;
+} // namespace detail
 
 inline DistanceMapPtr make_distance_mapper(const std::string& distance_map_type)
 {
   return detail::Instantiater::get().instantiate_impl(distance_map_type);
 }
 
-} /* namespace distmap */
+} // namespace distmap
 
-#endif /* _DISTANCE_MAP_CORE_DISTANCE_MAP_INSTANTIATER_H_ */
+#endif // _DISTANCE_MAP_CORE_DISTANCE_MAP_INSTANTIATER_H_

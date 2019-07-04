@@ -1,6 +1,6 @@
 #include <distance_map_core/distance_map_converter_base.h>
 #include <distance_map_core/conversion.h>
-#include <distance_map_core/distance_map_instantiater.h>
+#include <distance_map_core/distance_map_converter_instantiater.h>
 
 #include <ros/ros.h>
 
