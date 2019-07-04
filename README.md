@@ -65,7 +65,7 @@ roslaunch distance_map_node example.launch
 ```
 
 This command will :
--   start a [`map_server`](http://wiki.ros.org/map_server) providing a [simple map](distance_map_node/example/map/example.png)
+-   start a [`map_server`](http://wiki.ros.org/map_server) providing a [simple map](distance_map_node/example/map/example.pgm)
 -   start the **distance_map** node
 -   start [`rviz`](http://wiki.ros.org/rviz)
 -   start an interactive marker to introspect the **distance_map**
