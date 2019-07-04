@@ -236,8 +236,8 @@ DistanceMapDisplay::DistanceMapDisplay()
 {
   connect(this, SIGNAL( mapUpdated() ), this, SLOT( showMap() ));
   topic_property_ = new RosTopicProperty( "Topic", "",
-                                          QString::fromStdString( ros::message_traits::datatype<distance_map_msgs::DistanceFieldGrid>() ),
-                                          "distance_map_msgs::DistanceFieldGrid topic to subscribe to.",
+                                          QString::fromStdString( ros::message_traits::datatype<distance_map_msgs::DistanceMap>() ),
+                                          "distance_map_msgs::DistanceMap topic to subscribe to.",
                                           this, SLOT( updateTopic() ));
 
   alpha_property_ = new FloatProperty( "Alpha", 0.7,
@@ -559,7 +559,7 @@ void DistanceMapDisplay::clear()
   loaded_ = false;
 }
 
-bool validateMetaData(const distance_map_msgs::DistanceFieldGrid& msg)
+bool validateMetaData(const distance_map_msgs::DistanceMap& msg)
 {
   bool valid = true;
   valid = valid && validateFloats( msg.info.resolution );
@@ -567,7 +567,7 @@ bool validateMetaData(const distance_map_msgs::DistanceFieldGrid& msg)
   return valid;
 }
 
-void DistanceMapDisplay::incomingMap(const distance_map_msgs::DistanceFieldGrid::ConstPtr& msg)
+void DistanceMapDisplay::incomingMap(const distance_map_msgs::DistanceMap::ConstPtr& msg)
 {
   current_map_ = *msg;
 

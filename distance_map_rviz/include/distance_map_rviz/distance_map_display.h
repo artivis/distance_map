@@ -42,7 +42,7 @@
 #include <nav_msgs/MapMetaData.h>
 #include <ros/time.h>
 
-#include <distance_map_msgs/DistanceFieldGrid.h>
+#include <distance_map_msgs/DistanceMap.h>
 //#include <map_msgs/OccupancyGridUpdate.h>
 
 #include <rviz/display.h>
@@ -133,7 +133,7 @@ protected:
   virtual void update( float wall_dt, float ros_dt );
 
   /** @brief Copy msg into current_map_ and call showMap(). */
-  void incomingMap(const distance_map_msgs::DistanceFieldGrid::ConstPtr& msg);
+  void incomingMap(const distance_map_msgs::DistanceMap::ConstPtr& msg);
 
   /** @brief normalize distances. */
   void normalizeDistances();
@@ -155,7 +155,7 @@ protected:
   int width_;
   int height_;
   std::string frame_;
-  distance_map_msgs::DistanceFieldGrid current_map_;
+  distance_map_msgs::DistanceMap current_map_;
 
   ros::Subscriber map_sub_;
   //ros::Subscriber update_sub_;

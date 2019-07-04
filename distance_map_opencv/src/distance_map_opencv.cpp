@@ -1,5 +1,5 @@
 #include "distance_map_opencv/distance_map_opencv.h"
-#include "distance_map_msgs/DistanceFieldGrid.h"
+#include "distance_map_msgs/DistanceMap.h"
 
 #include <ros/ros.h>
 #include <costmap_2d/cost_values.h>
@@ -54,7 +54,7 @@ cv::Mat DistanceMapOpencv::costMapToMat(const costmap_2d::Costmap2D& costmap)
 
 void DistanceMapOpencv::matToDistanceFieldGrid(const cv::Mat& cv_map,
                                                const double resolution,
-                                               distmap::DistanceFieldGrid &map)
+                                               distmap::DistanceMap &map)
 {
   map.resize(cv_map.rows, cv_map.cols);
   map.setResolution(resolution);
@@ -70,7 +70,7 @@ void DistanceMapOpencv::matToDistanceFieldGrid(const cv::Mat& cv_map,
 
 void DistanceMapOpencv::matToDistanceFieldGrid(const cv::Mat& cv_map,
                                                const nav_msgs::MapMetaData& map_metadata,
-                                               distmap::DistanceFieldGrid &map)
+                                               distmap::DistanceMap &map)
 {
   matToDistanceFieldGrid(cv_map,
                          map_metadata.resolution,

@@ -1,198 +1,24 @@
-#ifndef _DISTANCE_MAP_CORE_DISTANCE_FIELD_GRID_H_
-#define _DISTANCE_MAP_CORE_DISTANCE_FIELD_GRID_H_
-
-#include <cmath>
-#include <stdexcept>
-#include <memory>
+#include "distance_map_core/distance_map.h"
 
 namespace distmap {
 
-class DistanceFieldGrid
-{
-  /// Used to convert to grid index
-  /// @note Forces 0.5 to round up
-  static constexpr double eps = 1e-8;
-
-public:
-
-  /// @todo Use Scalar to 'easily' switch
-  /// between floats & doubles
-  //using Scalar = float;
-
-  struct Dimension
-  {
-    Dimension(const std::size_t width, const std::size_t height);
-    std::size_t width = 0, height = 0;
-  };
-
-  struct Origin
-  {
-    // see https://stackoverflow.com/a/17436088/9709397
-    Origin()  {}//= default;
-    ~Origin() = default;
-
-    Origin(const double x, const double y,
-           const double yaw);
-
-    double x   = 0,
-           y   = 0,
-           yaw = 0;
-  };
-
-  struct Gradient
-  {
-    double dx = 0, dy = 0;
-
-    Gradient operator*(double w)
-    {
-      Gradient g = *this;
-      g.dx *= w; g.dy *= w;
-      return g;
-    }
-  };
-
-  DistanceFieldGrid(const Dimension& dimension,
-                    const double resolution = 1,
-                    const Origin& origin = Origin());
-
-  DistanceFieldGrid(const DistanceFieldGrid& grid);
-  DistanceFieldGrid(DistanceFieldGrid&& grid);
-
-  DistanceFieldGrid& operator=(const DistanceFieldGrid& grid);
-  DistanceFieldGrid& operator=(DistanceFieldGrid&& grid);
-
-  ~DistanceFieldGrid();
-
-  void resize(const std::size_t rows, const std::size_t cols);
-
-  bool isCellValid(const std::size_t row, const std::size_t col) const noexcept;
-  bool isPositionValid(const double x, const double y) const noexcept;
-
-  void cellToPosition(const std::size_t row, const std::size_t col,
-                      double& x, double& y) const;
-
-  void positionToCell(const double x, const double y,
-                      std::size_t& row, std::size_t& col) const;
-
-  /**
-   * @brief atCell
-   * @param row
-   * @param col
-   * @return The distance to the closest black (0) cell, in cell unit.
-   */
-  double atCell(const std::size_t row, const std::size_t col) const;
-
-  /**
-   * @brief atCellSafe, if cell is out of bound, return 0 (obstacle).
-   * @param row
-   * @param col
-   * @return The distance to the closest black (0) cell, in cell unit.
-   */
-  double atCellSafe(const std::size_t row, const std::size_t col) const;
-
-  /**
-   * @brief atPosition
-   * @param x,
-   * @param y
-   * @return The distance to the closest black (0) cell, in m unit.
-   */
-  double atPosition(const double x, const double y,
-                    const bool interpolate = false) const;
-
-  /**
-   * @brief atPositionSafe, if position is out of bound, return 0 (obstacle).
-   * @param x
-   * @param y
-   * @return The distance to the closest black (0) cell, in m unit.
-   */
-  double atPositionSafe(const double x, const double y,
-                        const bool interpolate = false) const;
-
-  /**
-   * @brief gradientAtCell
-   * @param row
-   * @param col
-   * @return
-   */
-  Gradient gradientAtCell(std::size_t row, std::size_t col) const;
-
-  /**
-   * @brief gradientAtPosition
-   * @param x
-   * @param y
-   * @return
-   */
-  Gradient gradientAtPosition(const double x, const double y,
-                              const bool interpolate = false) const;
-
-  /**
-   * @brief gradientAtCellSafe
-   * @param row
-   * @param col
-   * @return
-   */
-  Gradient gradientAtCellSafe(std::size_t row, std::size_t col) const;
-
-  /**
-   * @brief gradientAtPositionSafe
-   * @param x
-   * @param y
-   * @return
-   */
-  Gradient gradientAtPositionSafe(const double x, const double y,
-                                  const bool interpolate = false) const;
-
-  // Setter/getter
-
-  double* data();
-  const double* data() const;
-
-  //void setDimension(const Dimension& dimension);
-  void setOrigin(const Origin& origin);
-  void setResolution(const double resolution);
-
-  const Dimension& getDimension()  const noexcept;
-  const double&    getResolution() const noexcept;
-  const Origin&    getOrigin()     const noexcept;
-
-protected:
-
-  bool initialized_ = false;
-
-  Dimension dimension_; ///< @brief Dimension of the grid in cells.
-  double resolution_ = 1;
-  Origin origin_; ///< @brief The 2-D pose of the bottom-left pixel in the map.
-
-  /// @brief 2D grid data. Col-major.
-  double* data_;
-
-  std::size_t getIndex(const std::size_t row, const std::size_t col) const;
-
-  void assertIsValidCell(const std::size_t& row, const std::size_t& col) const;
-  void assertIsValidPosition(const double& x, const double& y) const;
-};
-
-using DistanceFieldGridPtr = std::shared_ptr<DistanceFieldGrid>;
-using DistanceFieldGridConstPtr = std::shared_ptr<const DistanceFieldGrid>;
-
-DistanceFieldGrid::Dimension::Dimension(const std::size_t width, const std::size_t height)
+DistanceMap::Dimension::Dimension(const std::size_t width, const std::size_t height)
   : width(width), height(height)
 {
   if (width == 0)
     throw std::runtime_error("Dimension x can't be zero !");
-
   if (height == 0)
     throw std::runtime_error("Dimension x can't be zero !");
 }
 
-DistanceFieldGrid::Origin::Origin(const double _x, const double _y,
+DistanceMap::Origin::Origin(const double _x, const double _y,
                                   const double _yaw)
   : x(_x), y(_y), yaw(_yaw)
 {
   //
 }
 
-DistanceFieldGrid::DistanceFieldGrid(const Dimension& dimension,
+DistanceMap::DistanceMap(const Dimension& dimension,
                                      const double resolution,
                                      const Origin& origin)
   : dimension_(dimension)
@@ -201,97 +27,86 @@ DistanceFieldGrid::DistanceFieldGrid(const Dimension& dimension,
 {
   if (resolution_ <= 0)
     throw std::runtime_error("Resolution can't be zero nor negative !");
-
   data_ = new double[dimension_.width*dimension_.height];
   initialized_ = true;
 }
 
-DistanceFieldGrid::DistanceFieldGrid(const DistanceFieldGrid& grid)
+DistanceMap::DistanceMap(const DistanceMap& grid)
   : dimension_(grid.dimension_)
 {
   *this = grid;
 }
 
-DistanceFieldGrid::DistanceFieldGrid(DistanceFieldGrid&& grid)
+DistanceMap::DistanceMap(DistanceMap&& grid)
   : dimension_(grid.dimension_)
 {
   *this = grid;
 }
 
-DistanceFieldGrid& DistanceFieldGrid::operator=(const DistanceFieldGrid& grid)
+DistanceMap& DistanceMap::operator=(const DistanceMap& grid)
 {
   if (grid.initialized_)
   {
     resolution_ = grid.resolution_;
     origin_     = grid.origin_;
-
     if (dimension_.width  != grid.dimension_.width ||
         dimension_.height != grid.dimension_.height  ) {
       dimension_  = grid.dimension_;
       data_ = new double[dimension_.width*dimension_.height];
     }
-
     std::copy(grid.data_, grid.data_+(dimension_.width*dimension_.height), data_);
-
     initialized_ = grid.initialized_;
   }
-
   return *this;
 }
 
-DistanceFieldGrid& DistanceFieldGrid::operator=(DistanceFieldGrid&& grid)
+DistanceMap& DistanceMap::operator=(DistanceMap&& grid)
 {
   if (grid.initialized_)
   {
     resolution_ = grid.resolution_;
     origin_     = grid.origin_;
-
     if (dimension_.width  != grid.dimension_.width ||
         dimension_.height != grid.dimension_.height  ) {
       dimension_  = grid.dimension_;
       data_ = new double[dimension_.width*dimension_.height];
     }
-
     std::copy(grid.data_, grid.data_+(dimension_.width*dimension_.height), data_);
-
     grid.dimension_ = Dimension(1,1);
     grid.resolution_ = 1;
     grid.origin_ = Origin();
     delete grid.data_;
     grid.data_ = NULL;
-
     initialized_ = grid.initialized_;
     grid.initialized_ = false;
   }
-
   return *this;
 }
 
-DistanceFieldGrid::~DistanceFieldGrid()
+DistanceMap::~DistanceMap()
 {
   if (initialized_)
     delete data_;
 }
 
-void DistanceFieldGrid::resize(const std::size_t rows, const std::size_t cols)
+void DistanceMap::resize(const std::size_t rows, const std::size_t cols)
 {
   if (rows*cols != dimension_.height*dimension_.width)
   {
     if (initialized_)
       delete data_;
-
     data_ = new double[rows*cols];
   }
   dimension_ = Dimension(cols, rows);
   initialized_ = true;
 }
 
-bool DistanceFieldGrid::isCellValid(const std::size_t row, const std::size_t col) const noexcept
+bool DistanceMap::isCellValid(const std::size_t row, const std::size_t col) const noexcept
 {
   return (row < dimension_.height) && (col < dimension_.width);
 }
 
-bool DistanceFieldGrid::isPositionValid(const double x, const double y) const noexcept
+bool DistanceMap::isPositionValid(const double x, const double y) const noexcept
 {
   std::size_t row, col;
   positionToCell(x,y,row,col);
@@ -299,7 +114,7 @@ bool DistanceFieldGrid::isPositionValid(const double x, const double y) const no
   return isCellValid(row, col);
 }
 
-void DistanceFieldGrid::cellToPosition(const std::size_t row,
+void DistanceMap::cellToPosition(const std::size_t row,
                                        const std::size_t col,
                                        double& x, double& y) const
 {
@@ -314,7 +129,7 @@ void DistanceFieldGrid::cellToPosition(const std::size_t row,
   y = sin_yaw * x_corner + cos_yaw * y_corner + origin_.y;
 }
 
-void DistanceFieldGrid::positionToCell(const double x, const double y,
+void DistanceMap::positionToCell(const double x, const double y,
                                        std::size_t& row, std::size_t& col) const
 {
   /* Sim2^-1 * p */
@@ -336,19 +151,19 @@ void DistanceFieldGrid::positionToCell(const double x, const double y,
   col = static_cast<std::size_t>( x_corner + eps);
 }
 
-double DistanceFieldGrid::atCell(const std::size_t row, const std::size_t col) const
+double DistanceMap::atCell(const std::size_t row, const std::size_t col) const
 {
   assertIsValidCell(row, col);
   return data_[getIndex(row, col)];
 }
 
-double DistanceFieldGrid::atCellSafe(const std::size_t row, const std::size_t col) const
+double DistanceMap::atCellSafe(const std::size_t row, const std::size_t col) const
 {
   /// @todo return -dist_to_in_bound ?
   return isCellValid(row,col)? data_[getIndex(row,col)] : 0;
 }
 
-double DistanceFieldGrid::atPosition(const double x, const double y,
+double DistanceMap::atPosition(const double x, const double y,
                                      const bool interpolate) const
 {
   assertIsValidPosition(x,y);
@@ -404,7 +219,7 @@ double DistanceFieldGrid::atPosition(const double x, const double y,
   return (g*(hy-y)+h*(y-ly))/resolution_;
 }
 
-double DistanceFieldGrid::atPositionSafe(const double x, const double y,
+double DistanceMap::atPositionSafe(const double x, const double y,
                                          const bool interpolate) const
 {
   /// @todo return -dist_to_in_bound ?
@@ -416,8 +231,8 @@ double DistanceFieldGrid::atPositionSafe(const double x, const double y,
   return d;
 }
 
-DistanceFieldGrid::Gradient
-DistanceFieldGrid::gradientAtCell(std::size_t row, std::size_t col) const
+DistanceMap::Gradient
+DistanceMap::gradientAtCell(std::size_t row, std::size_t col) const
 {
   assertIsValidCell(row, col);
 
@@ -444,8 +259,8 @@ DistanceFieldGrid::gradientAtCell(std::size_t row, std::size_t col) const
   return grad;
 }
 
-DistanceFieldGrid::Gradient
-DistanceFieldGrid::gradientAtPosition(double x, double y,
+DistanceMap::Gradient
+DistanceMap::gradientAtPosition(double x, double y,
                                       const bool interpolate) const
 {
   if (!interpolate)
@@ -547,8 +362,8 @@ DistanceFieldGrid::gradientAtPosition(double x, double y,
   return grad;
 }
 
-DistanceFieldGrid::Gradient
-DistanceFieldGrid::gradientAtCellSafe(std::size_t row, std::size_t col) const
+DistanceMap::Gradient
+DistanceMap::gradientAtCellSafe(std::size_t row, std::size_t col) const
 {
   Gradient grad;
   if (isCellValid(row-1,col-1) && isCellValid(row+1,col+1))
@@ -565,8 +380,8 @@ DistanceFieldGrid::gradientAtCellSafe(std::size_t row, std::size_t col) const
   return grad;
 }
 
-DistanceFieldGrid::Gradient
-DistanceFieldGrid::gradientAtPositionSafe(const double x, const double y,
+DistanceMap::Gradient
+DistanceMap::gradientAtPositionSafe(const double x, const double y,
                                           const bool interpolate) const
 {
   Gradient grad;
@@ -633,55 +448,7 @@ DistanceFieldGrid::gradientAtPositionSafe(const double x, const double y,
 ////  return grad;
 }
 
-// Setter/getter
-
-inline double* DistanceFieldGrid::data()
-{
-  return data_;
-}
-
-inline const double* DistanceFieldGrid::data() const
-{
-  return data_;
-}
-
-inline void DistanceFieldGrid::setOrigin(const Origin& origin)
-{
-  origin_ = origin;
-}
-
-inline void DistanceFieldGrid::setResolution(const double resolution)
-{
-  if (resolution <= 0)
-    throw std::runtime_error("Resolution can't be zero nor negative !");
-
-  resolution_ = resolution;
-}
-
-inline const DistanceFieldGrid::Dimension&
-DistanceFieldGrid::getDimension() const noexcept
-{
-  return dimension_;
-}
-
-inline const double&
-DistanceFieldGrid::getResolution() const noexcept
-{
-  return resolution_;
-}
-
-inline const DistanceFieldGrid::Origin&
-DistanceFieldGrid::getOrigin() const noexcept
-{
-  return origin_;
-}
-
-std::size_t DistanceFieldGrid::getIndex(const std::size_t row, const std::size_t col) const
-{
-  return row * dimension_.width + col;
-}
-
-void DistanceFieldGrid::assertIsValidCell(const std::size_t& row, const std::size_t& col) const
+void DistanceMap::assertIsValidCell(const std::size_t& row, const std::size_t& col) const
 {
   if (!isCellValid(row,col))
     throw std::out_of_range("Cell index " + std::to_string(row) +
@@ -694,7 +461,7 @@ void DistanceFieldGrid::assertIsValidCell(const std::size_t& row, const std::siz
                             "Resolution " + std::to_string(resolution_) + ".");
 }
 
-void DistanceFieldGrid::assertIsValidPosition(const double& x, const double& y) const
+void DistanceMap::assertIsValidPosition(const double& x, const double& y) const
 {
   if (!isPositionValid(x,y))
     throw std::out_of_range("Position " + std::to_string(x) +
@@ -707,20 +474,6 @@ void DistanceFieldGrid::assertIsValidPosition(const double& x, const double& y) 
                             "Resolution " + std::to_string(resolution_) + ".");
 }
 
-template <typename Stream>
-Stream& operator<<(Stream& s, const DistanceFieldGrid& g)
-{
-  s << "DistanceFieldGrid:\n"
-    << "\tdimension: " << g.getDimension().width << "x" << g.getDimension().height << "\n"
-    << "\tresolution: " << g.getResolution() << "\n"
-    << "\torigin: " << g.getOrigin().x << ", "
-                    << g.getOrigin().y << ", "
-                    << g.getOrigin().yaw
-    << "\n";
 
-  return s;
+
 }
-
-} /* namespace distmap */
-
-#endif /* _DISTANCE_MAP_CORE_DISTANCE_FIELD_GRID_H_ */

@@ -17,7 +17,7 @@ public:
 
 protected:
 
-  DistanceFieldGrid::Dimension previous_dim_ = DistanceFieldGrid::Dimension(1,1);
+  DistanceMap::Dimension previous_dim_ = DistanceMap::Dimension(1,1);
   std::unique_ptr<unsigned char[]> img_ptr_;
   std::unique_ptr<float[]> distance_field_ptr_;
 

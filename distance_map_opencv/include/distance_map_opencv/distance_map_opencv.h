@@ -21,10 +21,10 @@ public:
   static cv::Mat costMapToMat(const costmap_2d::Costmap2D& costmap);
   static void matToDistanceFieldGrid(const cv::Mat& cv_map,
                                      const double resolution,
-                                     distmap::DistanceFieldGrid &map);
+                                     distmap::DistanceMap &map);
   static void matToDistanceFieldGrid(const cv::Mat& cv_map,
                                      const nav_msgs::MapMetaData& map_metadata,
-                                     distmap::DistanceFieldGrid &map);
+                                     distmap::DistanceMap &map);
 
 protected:
 

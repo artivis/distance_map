@@ -42,6 +42,7 @@ include_directories(SYSTEM
 
 add_library(${PROJECT_NAME}
   src/distance_map_converter_base.cpp
+  src/distance_map.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}

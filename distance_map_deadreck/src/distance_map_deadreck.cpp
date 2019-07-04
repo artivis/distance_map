@@ -1,5 +1,5 @@
 #include "distance_map_deadreck/distance_map_deadreck.h"
-#include "distance_map_msgs/DistanceFieldGrid.h"
+#include "distance_map_msgs/DistanceMap.h"
 
 #include <ros/ros.h>
 #include <costmap_2d/cost_values.h>

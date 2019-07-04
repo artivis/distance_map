@@ -1,14 +1,14 @@
 #include <gtest/gtest.h>
 
-#include <distance_map_core/distance_field_grid.h>
+#include <distance_map_core/distance_map.h>
 
 struct GridTest : public testing::Test
 {
   GridTest()
-    : default_grid(distmap::DistanceFieldGrid::Dimension(3,3))
-    , grid(distmap::DistanceFieldGrid::Dimension(7,5),
+    : default_grid(distmap::DistanceMap::Dimension(3,3))
+    , grid(distmap::DistanceMap::Dimension(7,5),
            0.5,
-           distmap::DistanceFieldGrid::Origin(1.23,3.45,0.17))
+           distmap::DistanceMap::Origin(1.23,3.45,0.17))
 
   {
     for (int i=0; i<3*3; ++i)
@@ -63,8 +63,8 @@ struct GridTest : public testing::Test
     *(grid.data()+34) = 5;
   }
 
-  distmap::DistanceFieldGrid default_grid;
-  distmap::DistanceFieldGrid grid;
+  distmap::DistanceMap default_grid;
+  distmap::DistanceMap grid;
 };
 
 TEST_F(GridTest, TEST_GRID_DEFAULT)
@@ -174,7 +174,7 @@ TEST_F(GridTest, TEST_GRID_DEFAULT)
     }
 
   EXPECT_NO_THROW(
-    default_grid.setOrigin(distmap::DistanceFieldGrid::Origin(-23.17,-4.44,-M_PI/3));
+    default_grid.setOrigin(distmap::DistanceMap::Origin(-23.17,-4.44,-M_PI/3));
     default_grid.setResolution(0.44);
   );
 
@@ -202,7 +202,7 @@ TEST_F(GridTest, TEST_GRID)
   EXPECT_EQ(grid.getResolution(), 0.5);
 
   EXPECT_NO_THROW(
-    grid.setOrigin(distmap::DistanceFieldGrid::Origin(1,2,3));
+    grid.setOrigin(distmap::DistanceMap::Origin(1,2,3));
     grid.setResolution(0.1);
   );
 
@@ -212,7 +212,7 @@ TEST_F(GridTest, TEST_GRID)
   EXPECT_EQ(grid.getResolution(), 0.1);
 
   EXPECT_NO_THROW(
-    grid.setOrigin(distmap::DistanceFieldGrid::Origin());
+    grid.setOrigin(distmap::DistanceMap::Origin());
     grid.setResolution(1);
   );
 
@@ -357,7 +357,7 @@ TEST_F(GridTest, TEST_GRID)
   /// Resolution + Origin x-offset
 
   EXPECT_NO_THROW(
-    grid.setOrigin(distmap::DistanceFieldGrid::Origin(1.2,0,0));
+    grid.setOrigin(distmap::DistanceMap::Origin(1.2,0,0));
     grid.setResolution(0.5);
   );
 
@@ -406,7 +406,7 @@ TEST_F(GridTest, TEST_GRID)
   /// Resolution + Origin x-offset & y-offset
 
   EXPECT_NO_THROW(
-    grid.setOrigin(distmap::DistanceFieldGrid::Origin(1.2,4.7,0));
+    grid.setOrigin(distmap::DistanceMap::Origin(1.2,4.7,0));
     grid.setResolution(0.5);
   );
 
@@ -455,7 +455,7 @@ TEST_F(GridTest, TEST_GRID)
   /// Resolution + Origin x-offset & y-offset & yaw-offset
 
   EXPECT_NO_THROW(
-    grid.setOrigin(distmap::DistanceFieldGrid::Origin(-23.17,-4.44,-M_PI/3));
+    grid.setOrigin(distmap::DistanceMap::Origin(-23.17,-4.44,-M_PI/3));
     grid.setResolution(0.44);
   );
 

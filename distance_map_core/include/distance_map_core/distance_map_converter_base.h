@@ -4,9 +4,9 @@
 #include <nav_msgs/OccupancyGrid.h>
 #include <costmap_2d/costmap_2d.h>
 
-#include <distance_map_msgs/DistanceFieldGrid.h>
+#include <distance_map_msgs/DistanceMap.h>
 
-#include "distance_map_core/distance_field_grid.h"
+#include "distance_map_core/distance_map.h"
 
 namespace distmap {
 

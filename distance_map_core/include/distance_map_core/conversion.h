@@ -1,16 +1,16 @@
 #ifndef _DISTANCE_MAP_CORE_CONVERSION_H_
 #define _DISTANCE_MAP_CORE_CONVERSION_H_
 
-#include <distance_map_msgs/DistanceFieldGrid.h>
-#include "distance_map_core/distance_field_grid.h"
+#include <distance_map_msgs/DistanceMap.h>
+#include "distance_map_core/distance_map.h"
 
 #include <tf/tf.h>
 
 namespace distmap {
 
-distance_map_msgs::DistanceFieldGrid toMsg(const DistanceFieldGrid& map)
+distance_map_msgs::DistanceMap toMsg(const DistanceMap& map)
 {
-  distance_map_msgs::DistanceFieldGrid msg;
+  distance_map_msgs::DistanceMap msg;
 
   msg.info.width  = map.getDimension().width;
   msg.info.height = map.getDimension().height;
@@ -28,11 +28,11 @@ distance_map_msgs::DistanceFieldGrid toMsg(const DistanceFieldGrid& map)
   return msg;
 }
 
-DistanceFieldGrid fromMsg(const distance_map_msgs::DistanceFieldGrid& msg)
+DistanceMap fromMsg(const distance_map_msgs::DistanceMap& msg)
 {
-  DistanceFieldGrid grid(DistanceFieldGrid::Dimension(msg.info.width, msg.info.height),
+  DistanceMap grid(DistanceMap::Dimension(msg.info.width, msg.info.height),
                          msg.info.resolution,
-                         DistanceFieldGrid::Origin(msg.info.origin.position.x,
+                         DistanceMap::Origin(msg.info.origin.position.x,
                                                    msg.info.origin.position.y,
                                                    tf::getYaw(msg.info.origin.orientation)));
   std::copy(msg.data.data(),

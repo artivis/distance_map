@@ -18,7 +18,7 @@ public:
 
 protected:
 
-  std::shared_ptr<DistanceFieldGrid> dist_grid_ptr_;
+  std::shared_ptr<DistanceMap> dist_grid_ptr_;
 
   ros::NodeHandle private_nh_ = ros::NodeHandle("~");
 
@@ -77,9 +77,9 @@ void DistanceMapImarker::initialize_markers()
 
 void DistanceMapImarker::initialize()
 {
-  dist_grid_ptr_ = std::make_shared<DistanceFieldGrid>(DistanceFieldGrid::Dimension(5,5),
+  dist_grid_ptr_ = std::make_shared<DistanceMap>(DistanceMap::Dimension(5,5),
                                                        1,
-                                                       DistanceFieldGrid::Origin());
+                                                       DistanceMap::Origin());
 
   initialize_markers();
 

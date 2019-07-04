@@ -50,8 +50,8 @@ void DistanceMapNode::initialize()
 
   map_sub_ = private_nh_.subscribe("/map", 1, &DistanceMapNode::process, this);
 
-  field_obstacles_pub_ = private_nh_.advertise<distance_map_msgs::DistanceFieldGrid>("distance_field_obstacles", 1, true);
-//  field_unknowns_pub_  = private_nh_.advertise<distance_map_msgs::DistanceFieldGrid>("distance_field_unknowns",  1, true);
+  field_obstacles_pub_ = private_nh_.advertise<distance_map_msgs::DistanceMap>("distance_field_obstacles", 1, true);
+//  field_unknowns_pub_  = private_nh_.advertise<distance_map_msgs::DistanceMap>("distance_field_unknowns",  1, true);
 
   ROS_INFO("Subscribed to %s", map_sub_.getTopic().c_str());
 }

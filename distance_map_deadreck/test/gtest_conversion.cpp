@@ -6,9 +6,9 @@ struct GridTest : public testing::Test
 {
   GridTest()
     : mat(5,7,CV_32FC1)
-    , grid(distmap::DistanceFieldGrid::Dimension(7,5),
+    , grid(distmap::DistanceMap::Dimension(7,5),
            0.5,
-           distmap::DistanceFieldGrid::Origin(1.23,3.45,0.17))
+           distmap::DistanceMap::Origin(1.23,3.45,0.17))
 
   {
 
@@ -150,7 +150,7 @@ struct GridTest : public testing::Test
 
   nav_msgs::OccupancyGrid occgrid;
   cv::Mat mat;
-  distmap::DistanceFieldGrid grid;
+  distmap::DistanceMap grid;
 };
 
 TEST_F(GridTest, TEST_OCCGRID2MAT_CONVERSION)
@@ -183,10 +183,10 @@ TEST_F(GridTest, TEST_OCCGRID2MAT_CONVERSION)
 
 TEST_F(GridTest, TEST_MAT2GRID_CONVERSION)
 {
-  distmap::DistanceFieldGrid gridc(
-        distmap::DistanceFieldGrid::Dimension(2,2),
+  distmap::DistanceMap gridc(
+        distmap::DistanceMap::Dimension(2,2),
         0.5,
-        distmap::DistanceFieldGrid::Origin(1,1,1));
+        distmap::DistanceMap::Origin(1,1,1));
 
   ASSERT_NO_THROW(distmap::DistanceMapOpencv::matToDistanceFieldGrid(
                     mat, 1, gridc));
