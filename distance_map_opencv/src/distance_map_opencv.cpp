@@ -52,9 +52,9 @@ cv::Mat DistanceMapOpencv::costMapToMat(const costmap_2d::Costmap2D& costmap)
   return cv_map;
 }
 
-void DistanceMapOpencv::matToDistanceFieldGrid(const cv::Mat& cv_map,
-                                               const double resolution,
-                                               distmap::DistanceMap &map)
+void DistanceMapOpencv::matToDistanceMap(const cv::Mat& cv_map,
+                                         const double resolution,
+                                         distmap::DistanceMap &map)
 {
   map.resize(cv_map.rows, cv_map.cols);
   map.setResolution(resolution);
@@ -68,13 +68,13 @@ void DistanceMapOpencv::matToDistanceFieldGrid(const cv::Mat& cv_map,
   }
 }
 
-void DistanceMapOpencv::matToDistanceFieldGrid(const cv::Mat& cv_map,
-                                               const nav_msgs::MapMetaData& map_metadata,
-                                               distmap::DistanceMap &map)
+void DistanceMapOpencv::matToDistanceMap(const cv::Mat& cv_map,
+                                         const nav_msgs::MapMetaData& map_metadata,
+                                         distmap::DistanceMap &map)
 {
-  matToDistanceFieldGrid(cv_map,
-                         map_metadata.resolution,
-                         map);
+  matToDistanceMap(cv_map,
+                   map_metadata.resolution,
+                   map);
 }
 
 bool DistanceMapOpencv::configureImpl()
@@ -145,8 +145,8 @@ bool DistanceMapOpencv::processImpl(const nav_msgs::OccupancyGridConstPtr occ_gr
 //  cv::destroyAllWindows();
 
   // convert opencv to distance_map_msgs
-  matToDistanceFieldGrid(distance_field_obstacle_image_,
-                         occ_grid->info.resolution, *field_obstacles_);
+  matToDistanceMap(distance_field_obstacle_image_,
+                   occ_grid->info.resolution, *field_obstacles_);
   return true;
 }
 
@@ -187,9 +187,9 @@ bool DistanceMapOpencv::processImpl(const costmap_2d::Costmap2D* cost_map)
   */
 
   // convert opencv to distance_map_msgs
-  matToDistanceFieldGrid(distance_field_obstacle_image_,
-                         cost_map->getResolution(),
-                         *field_obstacles_);
+  matToDistanceMap(distance_field_obstacle_image_,
+                   cost_map->getResolution(),
+                   *field_obstacles_);
 
   return true;
 }
