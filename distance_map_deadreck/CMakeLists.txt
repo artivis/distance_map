@@ -18,7 +18,6 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS distance_map_core
-#  DEPENDS
 )
 
 include_directories(include)
@@ -29,13 +28,13 @@ include_directories(SYSTEM ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
 ###############
 
 add_library(${PROJECT_NAME}
-    src/distance_map_deadreck.cpp
+  src/distance_map_deadreck.cpp
 )
 target_link_libraries(${PROJECT_NAME}
-    ${catkin_LIBRARIES}
+  ${catkin_LIBRARIES}
 )
 
-#Require C++11
+# Require C++11
 if(CMAKE_VERSION VERSION_LESS "3.1")
   set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++11")
 else()
@@ -49,23 +48,21 @@ endif()
 ################
 
 install(TARGETS ${PROJECT_NAME}
-#    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 )
 
 install(DIRECTORY include/${PROJECT_NAME}/
-    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
 )
 
 install(FILES distance_map_plugin.xml
-    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
+  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
 
-foreach(dir launch) #config
-    install(DIRECTORY ${dir}/
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir}
-        PATTERN *.example EXCLUDE)
+foreach(dir launch)
+  install(DIRECTORY ${dir}/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir}
+    PATTERN *.example EXCLUDE)
 endforeach(dir)
 
 ################

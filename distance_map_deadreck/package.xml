@@ -11,7 +11,7 @@
   <author email="deray.jeremie@gmail.com">Jeremie Deray</author>
   <maintainer email="deray.jeremie@gmail.com">Jeremie Deray</maintainer>
 
-  <!-- this package license -->
+  <!-- This package license -->
   <license>Apache-2.0</license>
 
   <!-- Dead Reckonning license -->
@@ -21,9 +21,6 @@
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>distance_map_core</depend>
-
-<!--  <test_depend>roslib</test_depend>-->
-<!--  <test_depend>rostest</test_depend>-->
 
   <export>
     <distance_map_core plugin="${prefix}/distance_map_plugin.xml" />

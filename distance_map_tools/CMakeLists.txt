@@ -48,11 +48,11 @@ endif()
 ################
 
 install(TARGETS distance_map_imarker
-    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 foreach(dir launch) #config
-    install(DIRECTORY ${dir}/
-        DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir}
-        PATTERN *.example EXCLUDE)
+  install(DIRECTORY ${dir}/
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir}
+    PATTERN *.example EXCLUDE)
 endforeach(dir)

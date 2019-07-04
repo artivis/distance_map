@@ -29,7 +29,6 @@ catkin_package(
     pluginlib
     roscpp
     tf2
-  #DEPENDS
 )
 
 include_directories(include)
