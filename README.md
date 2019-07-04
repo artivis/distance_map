@@ -10,8 +10,8 @@ The **distance_map** package provides a 2D Distance Map class
 together with the means to generate it, convert it, send it and visualize it.
 
 -   Maintainer status: maintained
--   Maintainer: Jeremie Deray <deay.jeremie@gmail.com>
--   Author: Jeremie Deray <deay.jeremie@gmail.com>
+-   Maintainer: Jeremie Deray <deray.jeremie@gmail.com>
+-   Author: Jeremie Deray <deray.jeremie@gmail.com>
 -   License: Apache-2.0
 -   Bug / feature tracker: <https://github.com/artivis/distance_map/issues>
 -   Source: git <https://github.com/artivis/distance_map.git> (branch: master)
