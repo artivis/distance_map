@@ -1,6 +1,5 @@
 <launch>
 
-  <!-- The input topic. -->
   <arg name="topic_in" default="/map"/>
 
   <include file="$(find distance_map_node)/launch/distance_map.launch">

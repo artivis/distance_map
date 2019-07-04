@@ -78,8 +78,8 @@ void DistanceMapImarker::initialize_markers()
 void DistanceMapImarker::initialize()
 {
   dist_grid_ptr_ = std::make_shared<DistanceMap>(DistanceMap::Dimension(5,5),
-                                                       1,
-                                                       DistanceMap::Origin());
+                                                 1,
+                                                 DistanceMap::Origin());
 
   initialize_markers();
 
