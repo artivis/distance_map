@@ -14,7 +14,7 @@ public:
 
   void initialize();
 
-  void process(const distance_map_msgs::DistanceFieldGridConstPtr dist_grid);
+  void process(const distance_map_msgs::DistanceMapConstPtr dist_grid);
 
 protected:
 
@@ -187,7 +187,8 @@ void DistanceMapImarker::initialize()
   ROS_INFO("Subscribed to %s", grid_sub_.getTopic().c_str());
 }
 
-void DistanceMapImarker::process(const distance_map_msgs::DistanceFieldGridConstPtr dist_grid)
+void DistanceMapImarker::process(
+  const distance_map_msgs::DistanceMapConstPtr dist_grid)
 {
   if (dist_grid == nullptr)
   {
