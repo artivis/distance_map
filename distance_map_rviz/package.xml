@@ -6,8 +6,8 @@
     Rviz plugin for the visualization of ditance maps.
   </description>
 
-  <author email="jeremie.deray@pal-robotics.com">Jeremie Deray</author>
-  <maintainer email="jeremie.deray@pal-robotics.com">Jeremie Deray</maintainer>
+  <author email="deray.jeremie@gmail.com">Jeremie Deray</author>
+  <maintainer email="deray.jeremie@gmail.com">Jeremie Deray</maintainer>
 
   <!-- this package license -->
   <license>Apache-2.0</license>
