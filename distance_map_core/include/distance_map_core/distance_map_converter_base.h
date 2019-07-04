@@ -1,5 +1,5 @@
-#ifndef _DISTANCE_MAP_CORE_DISTANCE_MAP_BASE_H_
-#define _DISTANCE_MAP_CORE_DISTANCE_MAP_BASE_H_
+#ifndef _DISTANCE_MAP_CORE_DISTANCE_MAP_CONVERTER_BASE_H_
+#define _DISTANCE_MAP_CORE_DISTANCE_MAP_CONVERTER_BASE_H_
 
 #include <nav_msgs/OccupancyGrid.h>
 #include <costmap_2d/costmap_2d.h>
@@ -10,12 +10,12 @@
 
 namespace distmap {
 
-class DistanceMapBase
+class DistanceMapConverterBase
 {
 public:
 
-  DistanceMapBase() = default;
-  virtual ~DistanceMapBase() = default;
+  DistanceMapConverterBase() = default;
+  virtual ~DistanceMapConverterBase() = default;
 
   virtual bool process(const nav_msgs::OccupancyGridConstPtr occ_grid);
   virtual bool process(const costmap_2d::Costmap2D* cost_map);
@@ -51,66 +51,69 @@ protected:
   virtual void postProcess();
 };
 
-using DistanceMapPtr = boost::shared_ptr<DistanceMapBase>;
+using DistanceMapPtr = boost::shared_ptr<DistanceMapConverterBase>;
 
-inline void DistanceMapBase::setType(const std::string& type) { type_ = type; }
+inline void DistanceMapConverterBase::setType(const std::string& type)
+{
+  type_ = type;
+}
 
-inline bool DistanceMapBase::configureImpl()
+inline bool DistanceMapConverterBase::configureImpl()
 {
   return true;
 }
 
-inline void DistanceMapBase::preProcess(const nav_msgs::OccupancyGridConstPtr)
+inline void DistanceMapConverterBase::preProcess(const nav_msgs::OccupancyGridConstPtr)
 {
   //
 }
 
-inline void DistanceMapBase::preProcess(const costmap_2d::Costmap2D*)
+inline void DistanceMapConverterBase::preProcess(const costmap_2d::Costmap2D*)
 {
   //
 }
 
-bool DistanceMapBase::processImpl(const nav_msgs::OccupancyGridConstPtr)
+inline bool DistanceMapConverterBase::processImpl(const nav_msgs::OccupancyGridConstPtr)
 {
-  throw std::runtime_error("DistanceMapBase::processImpl is not implemented "
+  throw std::runtime_error("DistanceMapConverterBase::processImpl is not implemented "
                            "for input type nav_msgs::OccupancyGridConstPtr !");
   return false;
 }
 
-bool DistanceMapBase::processImpl(const costmap_2d::Costmap2D*)
+inline bool DistanceMapConverterBase::processImpl(const costmap_2d::Costmap2D*)
 {
-  throw std::runtime_error("DistanceMapBase::processImpl is not implemented "
+  throw std::runtime_error("DistanceMapConverterBase::processImpl is not implemented "
                            "for input type costmap_2d::Costmap2D !");
   return false;
 }
 
-inline void DistanceMapBase::postProcess()
+inline void DistanceMapConverterBase::postProcess()
 {
   //
 }
 
 inline DistanceFieldGridPtr
-DistanceMapBase::getDistanceFieldObstacle()
+DistanceMapConverterBase::getDistanceFieldObstacle()
 {
   return field_obstacles_;
 }
 
 inline DistanceFieldGridPtr
-DistanceMapBase::getDistanceFieldUnknown()
+DistanceMapConverterBase::getDistanceFieldUnknown()
 {
   return field_unknowns_;
 }
 
-void DistanceMapBase::setUnknowObstacles(bool unknow_is_obstacle)
+inline void DistanceMapConverterBase::setUnknowObstacles(bool unknow_is_obstacle)
 {
   unknow_is_obstacle_ = unknow_is_obstacle;
 }
 
-bool DistanceMapBase::getUnknowObstacles() const noexcept
+inline bool DistanceMapConverterBase::getUnknowObstacles() const noexcept
 {
   return unknow_is_obstacle_;
 }
 
-} /* namespace distmap */
+} // namespace distmap
 
-#endif /* _DISTANCE_MAP_CORE_DISTANCE_MAP_BASE_H_ */
+#endif // _DISTANCE_MAP_CORE_DISTANCE_MAP_CONVERTER_BASE_H_

@@ -197,4 +197,4 @@ bool DistanceMapOpencv::processImpl(const costmap_2d::Costmap2D* cost_map)
 } /* namespace distmap */
 
 #include <pluginlib/class_list_macros.h>
-PLUGINLIB_EXPORT_CLASS(distmap::DistanceMapOpencv, distmap::DistanceMapBase);
+PLUGINLIB_EXPORT_CLASS(distmap::DistanceMapOpencv, distmap::DistanceMapConverterBase);

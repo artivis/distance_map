@@ -1,11 +1,11 @@
 #ifndef _DISTANCE_MAP_DEADRECK_DISTANCE_MAP_DEADRECK_H_
 #define _DISTANCE_MAP_DEADRECK_DISTANCE_MAP_DEADRECK_H_
 
-#include <distance_map_core/distance_map_base.h>
+#include <distance_map_core/distance_map_converter_base.h>
 
 namespace distmap {
 
-class DistanceMapDeadReck : public DistanceMapBase
+class DistanceMapDeadReck : public DistanceMapConverterBase
 {
 public:
 

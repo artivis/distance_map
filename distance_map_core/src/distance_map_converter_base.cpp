@@ -1,16 +1,16 @@
-#include "distance_map_core/distance_map_base.h"
+#include "distance_map_core/distance_map_converter_base.h"
 
 #include <ros/ros.h>
 #include <tf2/utils.h>
 
 namespace distmap {
 
-bool DistanceMapBase::configure()
+bool DistanceMapConverterBase::configure()
 {
   return configureImpl();
 }
 
-bool DistanceMapBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
+bool DistanceMapConverterBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
 {
   if (occ_grid == nullptr)
   {
@@ -74,7 +74,7 @@ bool DistanceMapBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
   return processed;
 }
 
-bool DistanceMapBase::process(const costmap_2d::Costmap2D* cost_map)
+bool DistanceMapConverterBase::process(const costmap_2d::Costmap2D* cost_map)
 {
   if (cost_map == nullptr)
   {

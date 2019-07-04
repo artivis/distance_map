@@ -1,4 +1,4 @@
-#include <distance_map_core/distance_map_base.h>
+#include <distance_map_core/distance_map_converter_base.h>
 #include <distance_map_core/conversion.h>
 #include <distance_map_core/distance_map_instantiater.h>
 
@@ -20,7 +20,7 @@ protected:
 
   bool configured_ = false; /*!< @brief Whether the node is configured. */
 
-  boost::shared_ptr<DistanceMapBase> dist_map_ptr_;
+  boost::shared_ptr<DistanceMapConverterBase> dist_map_ptr_;
 
   ros::NodeHandle private_nh_ = ros::NodeHandle("~");
 

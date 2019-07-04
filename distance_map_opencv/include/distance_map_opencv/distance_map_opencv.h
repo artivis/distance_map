@@ -1,13 +1,13 @@
 #ifndef _DISTANCE_MAP_OPENCV_DISTANCE_MAP_OPENCV_H_
 #define _DISTANCE_MAP_OPENCV_DISTANCE_MAP_OPENCV_H_
 
-#include <distance_map_core/distance_map_base.h>
+#include <distance_map_core/distance_map_converter_base.h>
 
 #include <opencv2/opencv.hpp>
 
 namespace distmap {
 
-class DistanceMapOpencv : public DistanceMapBase
+class DistanceMapOpencv : public DistanceMapConverterBase
 {
 public:
 

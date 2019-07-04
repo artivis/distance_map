@@ -4,7 +4,7 @@
 #include <pluginlib/class_loader.h>
 
 #include "distance_map_core/singleton.h"
-#include "distance_map_core/distance_map_base.h"
+#include "distance_map_core/distance_map_converter_base.h"
 
 namespace
 {
@@ -59,8 +59,8 @@ public:
 
 protected:
 
-  pluginlib::ClassLoader<distmap::DistanceMapBase> loader =
-    {"distance_map_core","distmap::DistanceMapBase"};
+  pluginlib::ClassLoader<distmap::DistanceMapConverterBase> loader =
+    {"distance_map_core","distmap::DistanceMapConverterBase"};
 };
 
 } /* namespace */
