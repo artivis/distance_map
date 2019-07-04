@@ -105,3 +105,9 @@ For a PullRequest to get merged into `devel`, it must pass
     +   Will these changes break the API?
     +   Do the new changes follow the current style of naming?
 -   Compile / Test / Run on all target environments.
+
+
+## Credits
+
+This work originated at [PAL Robotics](http://pal-robotics.com/en/home/), with
+the participation of [Sai Kishor Kothakota](sai.kishor@pal-robotics.com)
