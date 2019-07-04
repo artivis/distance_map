@@ -83,10 +83,16 @@ void DistanceMapImarker::initialize()
 
   initialize_markers();
 
-  markers_pub_ = private_nh_.advertise<visualization_msgs::MarkerArray>("distance_map_markers", 1);
-  grid_sub_ = private_nh_.subscribe("/distance_map_node/distance_field_obstacles", 1, &DistanceMapImarker::process, this);
+  markers_pub_ = private_nh_.advertise<visualization_msgs::MarkerArray>(
+    "distance_map_markers", 1);
 
-  marker_server_ = boost::make_shared<interactive_markers::InteractiveMarkerServer>("distance_map_imarker");
+  grid_sub_ = private_nh_.subscribe(
+    "/distance_map_node/distance_field_obstacles",
+    1, &DistanceMapImarker::process, this);
+
+  marker_server_ = boost::make_shared<
+                    interactive_markers::InteractiveMarkerServer>(
+                      "distance_map_imarker");
 
   // create an interactive marker for our server
   visualization_msgs::InteractiveMarker imarker;

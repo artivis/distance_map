@@ -9,16 +9,12 @@
   <author email="deray.jeremie@gmail.com">Jeremie Deray</author>
   <maintainer email="deray.jeremie@gmail.com">Jeremie Deray</maintainer>
 
-  <!-- this package license -->
   <license>Apache-2.0</license>
 
   <buildtool_depend>catkin</buildtool_depend>
 
   <depend>distance_map_msgs</depend>
   <depend>rviz</depend>
-
-<!--  <test_depend>roslib</test_depend>-->
-<!--  <test_depend>rostest</test_depend>-->
 
   <export>
     <rviz plugin="${prefix}/distance_map_plugin.xml" />

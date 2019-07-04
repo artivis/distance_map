@@ -18,8 +18,6 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 catkin_package(
-  #INCLUDE_DIRS include
-  #LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS
     backward_ros
     distance_map_core
@@ -27,7 +25,6 @@ catkin_package(
     visualization_msgs
 )
 
-#include_directories(include)
 include_directories(SYSTEM ${catkin_INCLUDE_DIRS})
 
 ###############
@@ -37,7 +34,7 @@ include_directories(SYSTEM ${catkin_INCLUDE_DIRS})
 add_executable(distance_map_imarker src/distance_map_imarker.cpp)
 target_link_libraries(distance_map_imarker ${catkin_LIBRARIES})
 
-#Require C++11
+# Require C++11
 if(CMAKE_VERSION VERSION_LESS "3.1")
   set_target_properties(distance_map_imarker PROPERTIES COMPILE_FLAGS "-std=c++11")
 else()
@@ -51,8 +48,6 @@ endif()
 ################
 
 install(TARGETS distance_map_imarker
-#    ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
-#    LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
     RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
@@ -61,16 +56,3 @@ foreach(dir launch) #config
         DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir}
         PATTERN *.example EXCLUDE)
 endforeach(dir)
-
-#install(DIRECTORY include/${PROJECT_NAME}/
-#    DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
-#)
-
-################
-##    Test    ##
-################
-
-#if(CATKIN_ENABLE_TESTING)
-#    find_package(rostest REQUIRED)
-#    find_package(catkin REQUIRED COMPONENTS roslib)
-#endif()

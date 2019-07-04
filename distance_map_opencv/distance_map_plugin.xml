@@ -1,5 +1,7 @@
 <library path="lib/libdistance_map_opencv">
-  <class name="distmap/DistanceMapOpencv" type="distmap::DistanceMapOpencv" base_class_type="distmap::DistanceMapConverterBase">
+  <class name="distmap/DistanceMapOpencv"
+         type="distmap::DistanceMapOpencv"
+         base_class_type="distmap::DistanceMapConverterBase">
    <description>
    This is a rectangle plugin (Hello World !)
    </description>

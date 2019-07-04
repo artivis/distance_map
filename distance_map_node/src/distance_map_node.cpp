@@ -89,7 +89,7 @@ void DistanceMapNode::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
   }
 }
 
-} /* namespace distmap */
+} // namespace distmap
 
 int main(int argc, char **argv)
 {
