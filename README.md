@@ -17,9 +17,9 @@ together with the means to generate it, convert it, send it and visualize it.
 -   Source: git <https://github.com/artivis/distance_map.git> (branch: master)
 
 
-| Kinetic            | Lunar              |
+| Kinetic            | Melodic            |
 |--------------------|--------------------|
-| [![kinetic][3]][5] | [![lunar][4]][5]   |
+| [![kinetic][3]][5] | [![melodic][4]][5] |
 
 [3]: https://travis-matrix-badges.herokuapp.com/repos/artivis/distance_map/branches/devel/1
 [4]: https://travis-matrix-badges.herokuapp.com/repos/artivis/distance_map/branches/devel/4
