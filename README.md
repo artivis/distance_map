@@ -16,20 +16,16 @@ together with the means to generate it, convert it, send it and visualize it.
 -   Bug / feature tracker: <https://github.com/artivis/distance_map/issues>
 -   Source: git <https://github.com/artivis/distance_map.git> (branch: master)
 
-<!-- [![Build Status](https://travis-ci.org/artivis/distance_map.svg?branch=master)](https://travis-ci.org/artivis/distance_map) -->
----
-<!-- ## Build Summary
-| Indigo            | Jade              | Kinetic            | Lunar              |
-|-------------------|-------------------|--------------------|--------------------|
-| [![Indigo][1]][5] | [![Jade][2]][5]   | [![kinetic][3]][5] | [![lunar][4]][5]   |
 
-[1]: https://travis-matrix-badges.herokuapp.com/repos/artivis/distance_map/branches/master/1
-[2]: https://travis-matrix-badges.herokuapp.com/repos/artivis/distance_map/branches/master/4
-[3]: https://travis-matrix-badges.herokuapp.com/repos/artivis/distance_map/branches/master/7
-[4]: https://travis-matrix-badges.herokuapp.com/repos/artivis/distance_map/branches/master/10
+| Kinetic            | Lunar              |
+|--------------------|--------------------|
+| [![kinetic][3]][5] | [![lunar][4]][5]   |
+
+[3]: https://travis-matrix-badges.herokuapp.com/repos/artivis/distance_map/branches/devel/1
+[4]: https://travis-matrix-badges.herokuapp.com/repos/artivis/distance_map/branches/devel/4
 [5]: https://travis-ci.org/artivis/distance_map
 
---- -->
+---
 
 <p align="center">
   <a href="#quick-start">Quick Start</a> •
