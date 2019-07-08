@@ -72,7 +72,7 @@ This command will :
 
 You should see the following window,
 
-![alt text](distance_map_node/example/screen/example.png "ditance_map example")
+![alt text](distance_map_node/example/screen/distance_map.gif "distance_map example")
 
 ## Plugins
 Available plugins:
