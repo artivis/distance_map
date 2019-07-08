@@ -6,7 +6,8 @@ CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 if(COMPILER_SUPPORTS_CXX11)
   message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has C++11 support.")
 else()
-  message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+  message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
+                      "Please use a different C++ compiler.")
 endif()
 
 find_package(catkin REQUIRED COMPONENTS
@@ -60,7 +61,7 @@ add_definitions(-DQT_NO_KEYWORDS)
 add_library(${PROJECT_NAME} src/distance_map_display.cpp ${MOC_FILES})
 target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${QT_LIBRARIES})
 
-#Require C++11
+# Require C++11
 if(CMAKE_VERSION VERSION_LESS "3.1")
   set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++11")
 else()
@@ -89,17 +90,3 @@ install(
   FILES distance_map_plugin.xml
   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 )
-
-#install(
-#  DIRECTORY icons
-#  DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/icons
-#)
-
-################
-##    Test    ##
-################
-
-#if(CATKIN_ENABLE_TESTING)
-#    find_package(rostest REQUIRED)
-#    find_package(catkin REQUIRED COMPONENTS roslib)
-#endif()

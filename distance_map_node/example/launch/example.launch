@@ -1,0 +1,29 @@
+<launch>
+
+  <!-- Run the map server -->
+  <arg name="map_file" default="$(find distance_map_node)/example/map/example.yaml"/>
+
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+  <!-- Run rviz. -->
+  <node type="rviz" name="rviz" pkg="rviz" args="-d $(find distance_map_node)/example/rviz/example.rviz" />
+
+  <!-- Run distance_map. -->
+
+  <!-- The distance_map plugin type. -->
+  <arg name="distance_map_type" default="distmap/DistanceMapDeadReck"/>
+
+  <!-- The input topic. -->
+  <arg name="topic_in" default="/map"/>
+
+  <!-- distance_map node. -->
+  <node pkg="distance_map_node" type="distance_map_node" name="distance_map_node"
+        output="screen">
+    <param name="distance_map_type" value="$(arg distance_map_type)" />
+    <remap from="/map" to="$(arg topic_in)" />
+  </node>
+
+  <!-- distance_map tool for interactive visualization. -->
+  <node pkg="distance_map_tools" type="distance_map_imarker" name="distance_map_imarker" output="screen"/>
+
+</launch>

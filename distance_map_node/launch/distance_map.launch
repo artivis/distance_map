@@ -1,27 +1,14 @@
 <launch>
 
-  <!-- Launch node through valgrind/gdb. -->
-  <arg name="debug" default="false"/>
-
-<!--  <arg name="launch_prefix" value="gdb -ex run - -args"     if="$(arg debug)"/>-->
-  <arg name="launch_prefix" value="valgrind"           if="$(arg debug)"/>
-  <arg name="launch_prefix" value=""                   unless="$(arg debug)"/>
-
   <!-- The ditance map plugin type. -->
   <arg name="distance_map_type"/>
-
-  <!-- A config file for the laser odometry plugin. -->
-  <!--arg name="node_config_file" default="$(find distance_map_node)/config/distance_map_node_default.yaml"/-->
-  <!--arg name="plugin_config_file" default="$(find distance_map_node)/config/plugin_config_file_empty.yaml"/-->
 
   <!-- The input topic. -->
   <arg name="topic_in" default="/map"/>
 
   <node pkg="distance_map_node" type="distance_map_node" name="distance_map_node"
-        output="screen" launch-prefix="$(arg launch_prefix)">
+        output="screen">
     <param name="distance_map_type" value="$(arg distance_map_type)" />
-    <!-- rosparam file="$(arg node_config_file)" command="load" /-->
-    <!-- rosparam file="$(arg plugin_config_file)" command="load" /-->
     <remap from="/map" to="$(arg topic_in)" />
   </node>
 

@@ -1,24 +1,41 @@
+/*
+ * Copyright 2019 Jeremie Deray
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ * Author: Jeremie Deray
+ */
+
 #ifndef _DISTANCE_MAP_CORE_DISTANCE_MAP_INSTANTIATER_H_
 #define _DISTANCE_MAP_CORE_DISTANCE_MAP_INSTANTIATER_H_
 
 #include <pluginlib/class_loader.h>
 
 #include "distance_map_core/singleton.h"
-#include "distance_map_core/distance_map_base.h"
+#include "distance_map_core/distance_map_converter_base.h"
 
-namespace
-{
+namespace {
 
-class DistanceMapInstantiater final
+class DistanceMapConverterInstantiater final
 {
 public:
 
-  DistanceMapInstantiater()  = default;
-  ~DistanceMapInstantiater() = default;
+  DistanceMapConverterInstantiater()  = default;
+  ~DistanceMapConverterInstantiater() = default;
 
   // Not copyable
-  LaserOdometryInstanDistanceMapInstantiatertiater(DistanceMapInstantiater&) = delete;
-  void operator=(DistanceMapInstantiater&)                                   = delete;
+  LaserOdometryInstanDistanceMapInstantiatertiater(DistanceMapConverterInstantiater&) = delete;
+  void operator=(DistanceMapConverterInstantiater&)                                   = delete;
 
   distmap::DistanceMapPtr instantiate_impl(const std::string& distance_map_type)
   {
@@ -59,23 +76,23 @@ public:
 
 protected:
 
-  pluginlib::ClassLoader<distmap::DistanceMapBase> loader =
-    {"distance_map_core","distmap::DistanceMapBase"};
+  pluginlib::ClassLoader<distmap::DistanceMapConverterBase> loader =
+    {"distance_map_core","distmap::DistanceMapConverterBase"};
 };
 
-} /* namespace */
+} // namespace
 
 namespace distmap {
 
 namespace detail {
-using Instantiater = details::Singleton<DistanceMapInstantiater>;
-} /* namespace detail */
+using Instantiater = details::Singleton<DistanceMapConverterInstantiater>;
+} // namespace detail
 
 inline DistanceMapPtr make_distance_mapper(const std::string& distance_map_type)
 {
   return detail::Instantiater::get().instantiate_impl(distance_map_type);
 }
 
-} /* namespace distmap */
+} // namespace distmap
 
-#endif /* _DISTANCE_MAP_CORE_DISTANCE_MAP_INSTANTIATER_H_ */
+#endif // _DISTANCE_MAP_CORE_DISTANCE_MAP_INSTANTIATER_H_

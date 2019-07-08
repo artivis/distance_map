@@ -1,0 +1,5 @@
+<launch>
+
+  <node pkg="distance_map_tools" type="distance_map_imarker" name="distance_map_imarker" output="screen"/>
+
+</launch>

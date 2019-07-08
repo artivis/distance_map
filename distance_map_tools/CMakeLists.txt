@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.11 FATAL_ERROR)
-project(distance_map_node)
+project(distance_map_tools)
 
 include(CheckCXXCompilerFlag)
 CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
@@ -11,13 +11,18 @@ else()
 endif()
 
 find_package(catkin REQUIRED COMPONENTS
+  backward_ros
   distance_map_core
-  pluginlib
-  roscpp
+  interactive_markers
+  visualization_msgs
 )
 
 catkin_package(
-  CATKIN_DEPENDS distance_map_core pluginlib roscpp
+  CATKIN_DEPENDS
+    backward_ros
+    distance_map_core
+    interactive_markers
+    visualization_msgs
 )
 
 include_directories(SYSTEM ${catkin_INCLUDE_DIRS})
@@ -26,27 +31,28 @@ include_directories(SYSTEM ${catkin_INCLUDE_DIRS})
 ##   Build   ##
 ###############
 
-add_executable(${PROJECT_NAME} src/distance_map_node.cpp)
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES})
+add_executable(distance_map_imarker src/distance_map_imarker.cpp)
+target_link_libraries(distance_map_imarker ${catkin_LIBRARIES})
 
 # Require C++11
 if(CMAKE_VERSION VERSION_LESS "3.1")
-  set_target_properties(${PROJECT_NAME} PROPERTIES COMPILE_FLAGS "-std=c++11")
+  set_target_properties(distance_map_imarker PROPERTIES COMPILE_FLAGS "-std=c++11")
 else()
-  set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 11)
-  set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD_REQUIRED ON)
-  set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_EXTENSIONS OFF)
+  set_property(TARGET distance_map_imarker PROPERTY CXX_STANDARD 11)
+  set_property(TARGET distance_map_imarker PROPERTY CXX_STANDARD_REQUIRED ON)
+  set_property(TARGET distance_map_imarker PROPERTY CXX_EXTENSIONS OFF)
 endif()
 
 ################
 ##  Install   ##
 ################
 
-install(TARGETS ${PROJECT_NAME}
+install(TARGETS distance_map_imarker
   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
-foreach(dir launch example)
+foreach(dir launch) #config
   install(DIRECTORY ${dir}/
-    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir})
+    DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}/${dir}
+    PATTERN *.example EXCLUDE)
 endforeach(dir)

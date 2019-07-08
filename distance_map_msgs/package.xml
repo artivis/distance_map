@@ -4,8 +4,8 @@
   <version>0.0.0</version>
   <description>Definition of the distance map message type.</description>
 
-  <maintainer email="jeremie.deray@pal-robotics.com">Jeremie Deray</maintainer>
-  <author email="jeremie.deray@pal-robotics.com">Jeremie Deray</author>
+  <maintainer email="deray.jeremie@gmail.com">Jeremie Deray</maintainer>
+  <author email="deray.jeremie@gmail.com">Jeremie Deray</author>
 
   <license>Apache-2.0</license>
 

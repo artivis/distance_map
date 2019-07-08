@@ -6,7 +6,8 @@ CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
 if(COMPILER_SUPPORTS_CXX11)
   message(STATUS "The compiler ${CMAKE_CXX_COMPILER} has C++11 support.")
 else()
-  message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+  message(FATAL_ERROR "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. "
+                      "Please use a different C++ compiler.")
 endif()
 
 find_package(catkin REQUIRED COMPONENTS
@@ -28,7 +29,6 @@ catkin_package(
     pluginlib
     roscpp
     tf2
-  #DEPENDS
 )
 
 include_directories(include)
@@ -41,7 +41,8 @@ include_directories(SYSTEM
 ###############
 
 add_library(${PROJECT_NAME}
-  src/distance_map_base.cpp
+  src/distance_map_converter_base.cpp
+  src/distance_map.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${catkin_LIBRARIES}
@@ -75,8 +76,5 @@ install(DIRECTORY include/${PROJECT_NAME}/
 ################
 
 if(CATKIN_ENABLE_TESTING)
-
-  #MESSAGE("Building tests.")
-  #add_subdirectory(test)
-
+  add_subdirectory(test)
 endif()

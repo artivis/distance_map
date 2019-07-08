@@ -1,16 +1,16 @@
-#include "distance_map_core/distance_map_base.h"
+#include "distance_map_core/distance_map_converter_base.h"
 
 #include <ros/ros.h>
 #include <tf2/utils.h>
 
 namespace distmap {
 
-bool DistanceMapBase::configure()
+bool DistanceMapConverterBase::configure()
 {
   return configureImpl();
 }
 
-bool DistanceMapBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
+bool DistanceMapConverterBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
 {
   if (occ_grid == nullptr)
   {
@@ -22,11 +22,11 @@ bool DistanceMapBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
       field_obstacles_->getDimension().width  != occ_grid->info.width or
       field_obstacles_->getDimension().height != occ_grid->info.height)
   {
-    field_obstacles_ = std::make_shared<DistanceFieldGrid>(
-                         DistanceFieldGrid::Dimension(occ_grid->info.width,
+    field_obstacles_ = std::make_shared<DistanceMap>(
+                         DistanceMap::Dimension(occ_grid->info.width,
                                                       occ_grid->info.height),
                          occ_grid->info.resolution,
-                         DistanceFieldGrid::Origin(occ_grid->info.origin.position.x,
+                         DistanceMap::Origin(occ_grid->info.origin.position.x,
                                                    occ_grid->info.origin.position.y,
                                                    tf2::getYaw(occ_grid->info.origin.orientation)));
   }
@@ -34,7 +34,7 @@ bool DistanceMapBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
            field_obstacles_->getOrigin().y != occ_grid->info.origin.position.y)
   {
     field_obstacles_->setOrigin(
-          DistanceFieldGrid::Origin(occ_grid->info.origin.position.x,
+          DistanceMap::Origin(occ_grid->info.origin.position.x,
                                     occ_grid->info.origin.position.y,
                                     tf2::getYaw(occ_grid->info.origin.orientation)));
   }
@@ -43,21 +43,21 @@ bool DistanceMapBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
       field_unknowns_->getDimension().width  != occ_grid->info.width or
       field_unknowns_->getDimension().height != occ_grid->info.height)
   {
-    field_unknowns_ = std::make_shared<DistanceFieldGrid>(
-                         DistanceFieldGrid::Dimension(occ_grid->info.width,
+    field_unknowns_ = std::make_shared<DistanceMap>(
+                         DistanceMap::Dimension(occ_grid->info.width,
                                                       occ_grid->info.height),
                          occ_grid->info.resolution,
-                         DistanceFieldGrid::Origin(occ_grid->info.origin.position.x,
+                         DistanceMap::Origin(occ_grid->info.origin.position.x,
                                                    occ_grid->info.origin.position.y,
-                                                   0));
+                                                   tf2::getYaw(occ_grid->info.origin.orientation)));
   }
   else if (field_unknowns_->getOrigin().x != occ_grid->info.origin.position.x or
            field_unknowns_->getOrigin().y != occ_grid->info.origin.position.y)
   {
     field_unknowns_->setOrigin(
-          DistanceFieldGrid::Origin(occ_grid->info.origin.position.x,
+          DistanceMap::Origin(occ_grid->info.origin.position.x,
                                     occ_grid->info.origin.position.y,
-                                    0));
+                                    tf2::getYaw(occ_grid->info.origin.orientation)));
   }
 
   preProcess(occ_grid);
@@ -74,7 +74,7 @@ bool DistanceMapBase::process(const nav_msgs::OccupancyGridConstPtr occ_grid)
   return processed;
 }
 
-bool DistanceMapBase::process(const costmap_2d::Costmap2D* cost_map)
+bool DistanceMapConverterBase::process(const costmap_2d::Costmap2D* cost_map)
 {
   if (cost_map == nullptr)
   {
@@ -94,11 +94,11 @@ bool DistanceMapBase::process(const costmap_2d::Costmap2D* cost_map)
       field_obstacles_->getDimension().width  != cost_map->getSizeInCellsX() or
       field_obstacles_->getDimension().height != cost_map->getSizeInCellsY())
   {
-    field_obstacles_ = std::make_shared<DistanceFieldGrid>(
-                         DistanceFieldGrid::Dimension(cost_map->getSizeInCellsX(),
+    field_obstacles_ = std::make_shared<DistanceMap>(
+                         DistanceMap::Dimension(cost_map->getSizeInCellsX(),
                                                       cost_map->getSizeInCellsY()),
                          resolution,
-                         DistanceFieldGrid::Origin(cost_map->getOriginX() - resolution_offset,
+                         DistanceMap::Origin(cost_map->getOriginX() - resolution_offset,
                                                    cost_map->getOriginY() - resolution_offset,
                                                    0));
   }
@@ -106,7 +106,7 @@ bool DistanceMapBase::process(const costmap_2d::Costmap2D* cost_map)
       field_obstacles_->getOrigin().y != (cost_map->getOriginY() - resolution_offset))
   {
     field_obstacles_->setOrigin(
-          DistanceFieldGrid::Origin(cost_map->getOriginX() - resolution_offset,
+          DistanceMap::Origin(cost_map->getOriginX() - resolution_offset,
                                     cost_map->getOriginY() - resolution_offset,
                                     0));
   }
@@ -117,11 +117,11 @@ bool DistanceMapBase::process(const costmap_2d::Costmap2D* cost_map)
       field_unknowns_->getDimension().height != cost_map->getSizeInCellsY())
   {
     double resolution = cost_map->getResolution();
-    field_unknowns_ = std::make_shared<DistanceFieldGrid>(
-                         DistanceFieldGrid::Dimension(cost_map->getSizeInCellsX(),
+    field_unknowns_ = std::make_shared<DistanceMap>(
+                         DistanceMap::Dimension(cost_map->getSizeInCellsX(),
                                                       cost_map->getSizeInCellsY()),
                          resolution,
-                         DistanceFieldGrid::Origin(cost_map->getOriginX() - resolution_offset,
+                         DistanceMap::Origin(cost_map->getOriginX() - resolution_offset,
                                                    cost_map->getOriginY() - resolution_offset,
                                                    0));
   }
@@ -129,7 +129,7 @@ bool DistanceMapBase::process(const costmap_2d::Costmap2D* cost_map)
       field_unknowns_->getOrigin().y != (cost_map->getOriginY() - resolution_offset))
   {
     field_unknowns_->setOrigin(
-          DistanceFieldGrid::Origin(cost_map->getOriginX() - resolution_offset,
+          DistanceMap::Origin(cost_map->getOriginX() - resolution_offset,
                                     cost_map->getOriginY() - resolution_offset,
                                     0));
   }

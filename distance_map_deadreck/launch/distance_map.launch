@@ -3,7 +3,7 @@
   <arg name="topic_in" default="/map"/>
 
   <include file="$(find distance_map_node)/launch/distance_map.launch">
-    <arg name="distance_map_type" value="distmap/DistanceMapOpencv"/>
+    <arg name="distance_map_type" value="distmap/DistanceMapDeadReck"/>
     <arg name="topic_in" value="$(arg topic_in)" />
   </include>
 

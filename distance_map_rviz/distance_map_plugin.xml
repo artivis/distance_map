@@ -1,8 +1,8 @@
 <library path="lib/libdistance_map_rviz">
   <class type="rviz::DistanceMapDisplay" base_class_type="rviz::Display">
    <description>
-   A Rviz plugin to display distance_map_msgs/DistanceFieldGrid messages.
+   A Rviz plugin to display distance_map_msgs/DistanceMap messages.
    </description>
-   <message_type>distance_map_msgs/DistanceFieldGrid</message_type>
+   <message_type>distance_map_msgs/DistanceMap</message_type>
   </class>
 </library>
