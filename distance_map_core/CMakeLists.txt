@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   pluginlib
   roscpp
   tf2
+  tf2_geometry_msgs
 )
 
 catkin_package(
@@ -29,6 +30,7 @@ catkin_package(
     pluginlib
     roscpp
     tf2
+    tf2_geometry_msgs
 )
 
 include_directories(include)
