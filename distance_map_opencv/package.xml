@@ -22,7 +22,7 @@
 
   <depend>distance_map_core</depend>
 
-  <depend>OpenCV</depend>
+  <depend>opencv3</depend>
 
   <export>
     <distance_map_core plugin="${prefix}/distance_map_plugin.xml" />
