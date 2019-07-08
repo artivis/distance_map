@@ -16,6 +16,9 @@
   <depend>distance_map_msgs</depend>
   <depend>rviz</depend>
 
+  <exec_depend>libqt5-core</exec_depend>
+  <exec_depend>libqt5-widgets</exec_depend>
+
   <export>
     <rviz plugin="${prefix}/distance_map_plugin.xml" />
   </export>
