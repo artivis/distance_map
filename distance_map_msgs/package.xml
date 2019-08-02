@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>distance_map_msgs</name>
-  <version>0.0.0</version>
+  <version>0.1.0</version>
   <description>Definition of the distance map message type.</description>
 
   <maintainer email="deray.jeremie@gmail.com">Jeremie Deray</maintainer>
