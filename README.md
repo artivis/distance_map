@@ -1,6 +1,6 @@
 # distance_map
 
-A package for converting `OccupancyGrid` to 2D distance map.
+A package for converting `OccupancyGrid`/`Costmap2D` to 2D distance map.
 
 ---
 
@@ -38,15 +38,12 @@ together with the means to generate it, convert it, send it and visualize it.
 
 ## Quick Start
 
-<!--
-### Installation
-
-#### Binaries
+### Binaries
 ```terminal
-$ apt-get install manif
+$ apt-get install ros-melodic-distance-map
 ```
--->
-<!--#### From source-->
+
+### From source
 
 ```terminal
 $ git clone https://github.com/artivis/distance_map.git
